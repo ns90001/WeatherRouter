@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NearestCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands</a> &gt; <span class="el_source">NearestCmd.java</span></div><h1>NearestCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache.Cache;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDTree;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.MultiTreeMap;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+
+import java.util.List;
+
+/**
+ * Class for NearestCmd which implements the nearest command for maps 1+2.
+ */
+public class NearestCmd implements ICallable {
+  private final MapCmd mapCmd;
+  private MapNode nearNode;
+  private Cache&lt;String, String&gt; cacheMap;
+
+  /**
+   * Constructor for NearestCmd. Takes in a MapCmd, and creates a cacheMap.
+   * @param map - map of type MapCmd.
+   */
+<span class="fc" id="L23">  public NearestCmd(MapCmd map) {</span>
+<span class="fc" id="L24">    cacheMap = new Cache&lt;String, String&gt;();</span>
+<span class="fc" id="L25">    cacheMap.build();</span>
+<span class="fc" id="L26">    mapCmd = map;</span>
+<span class="fc" id="L27">  }</span>
+
+  /**
+   * Executes the nearest command.
+   * @param tokens arguments for the command, not including the command name
+   * @return  a string of the name of the nearest node
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">    if (mapCmd.getNodeMap() == null) {</span>
+<span class="fc" id="L37">      return &quot;ERROR: No database to use command on&quot;;</span>
+    }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (tokens.size() != 2) { // make sure correct num of arguments pass in</span>
+<span class="fc" id="L40">      return &quot;ERROR: Nearest should have 2 arguments &lt;lat&gt; &lt;long&gt;&quot;;</span>
+    }
+<span class="fc" id="L42">    double[] coords = new double[2];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    for (int i = 0; i &lt; 2; i++) {</span>
+      try { // make sure first arg is a double
+<span class="fc" id="L45">        coords[i] = Double.parseDouble(tokens.get(i));</span>
+<span class="fc" id="L46">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L47">        return &quot;ERROR: argument &quot; + (i + 1) + &quot; should be a number representing a coordinate&quot;;</span>
+<span class="fc" id="L48">      }</span>
+    }
+<span class="fc" id="L50">    String key = tokens.get(0) + &quot; &quot; + tokens.get(1);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">    if (cacheMap.hasKey(key)) { // if in cacheMap already, use map to return</span>
+<span class="nc" id="L52">      return cacheMap.returnValue(key);</span>
+    }
+<span class="fc" id="L54">    KDTree&lt;MapNode&gt; nodeTree = mapCmd.getNodeTree();</span>
+<span class="fc" id="L55">    MultiTreeMap&lt;Double, MapNode&gt; nearestNode = nodeTree.kNearestNeighbors(1, coords);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">    if (nearestNode.size() == 0) { // if no neighbors</span>
+<span class="nc" id="L57">      return &quot;&quot;;</span>
+    } else {
+<span class="fc" id="L59">      nearNode = nearestNode.pollFirstEntry().getValue().get(0);</span>
+<span class="fc" id="L60">      String output = nearNode.toString(); // string to output</span>
+      // rough mem size of string
+<span class="fc" id="L62">      int size = 4 * 2 * (int) ((((output.length()) * 2) + 5 * 6 + 3 * 5) / (4 * 2));</span>
+<span class="fc" id="L63">      cacheMap.setSizeOfVal(size);</span>
+<span class="fc" id="L64">      cacheMap.add(key, output); // add to cacheMap</span>
+<span class="fc" id="L65">      return output;</span>
+    }
+  }
+  /**
+   * Method that will be used in dijsktras so we have access to the
+   * nearest node found.
+   * @return - a MapNode
+   */
+  public MapNode getNearNode() {
+<span class="fc" id="L74">    return nearNode;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

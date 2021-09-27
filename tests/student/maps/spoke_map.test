@@ -1,0 +1,15 @@
+INPUT
+map data/maps/spoke.sqlite3
+route 0 0 1 1
+route 1 1 0 0
+route 1.5 1.5 1 1
+route .1 .1 1 1
+route "Sootball Ln" "Chihiro Ave" "Sootball Ln" "Radish Spirit Blvd"
+OUTPUT
+map set to data/maps/spoke.sqlite3
+/n/0 -> /n/1 : /w/0
+/n/1 -/- /n/0
+/n/2 -/- /n/1
+/n/0 -> /n/1 : /w/0
+/n/0
+END

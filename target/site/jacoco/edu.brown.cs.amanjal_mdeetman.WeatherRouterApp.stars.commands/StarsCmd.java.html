@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StarsCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands</a> &gt; <span class="el_source">StarsCmd.java</span></div><h1>StarsCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDTree;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.csv.CSVParser;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.Star;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.StarXComparator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
+/**
+ * Class representing the stars command.
+ */
+public class StarsCmd implements ICallable {
+  private List&lt;Star&gt; stars;
+  private HashMap&lt;Integer, Star&gt; starMap;
+  private final KDTree&lt;Star&gt; starsTree;
+
+  /**
+   * Constructor for StarsCmd which initializes instance variables.
+   */
+<span class="fc" id="L26">  public StarsCmd() {</span>
+<span class="fc" id="L27">    stars = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L28">    starsTree = new KDTree&lt;&gt;(3);</span>
+<span class="fc" id="L29">    starMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L30">  }</span>
+
+  /**
+   * Will take in a csv file containing stars, parse it, and store a list of Star objects.
+   *
+   * @param tokens which should just be the name of a csv file which should contain stars
+   * @return String which will either contain an error message or, if successful, will
+   * indicate the number of stars loaded in.
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">    if (tokens.size() != 1) {</span>
+<span class="nc" id="L42">      return &quot;ERROR: stars command should have 1 argument: &lt;csv&gt;&quot;;</span>
+    }
+<span class="fc" id="L44">    String filename = tokens.get(0);</span>
+<span class="fc" id="L45">    stars = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">    CSVParser csvParser = new CSVParser();</span>
+<span class="fc" id="L47">    String error = csvParser.parse(filename, true);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">    if (error.length() &gt; 0) {</span>
+<span class="fc" id="L49">      return error;</span>
+    }
+    //checks, using the header that the csv file parsed contains stars in the correct format
+<span class="nc" id="L52">    String[] header = csvParser.getHeader();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (!Arrays.toString(header).equals(&quot;[StarID, ProperName, X, Y, Z]&quot;)) {</span>
+<span class="nc" id="L54">      return &quot;ERROR: csv should have header \&quot;StarID,ProperName,X,Y,Z\&quot;&quot;;</span>
+    }
+<span class="nc" id="L56">    List&lt;String[]&gt; csvList = csvParser.getList();</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    for (String[] starValues : csvList) {</span>
+<span class="nc" id="L58">      Star star = addStar(starValues);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">      if (star == null) {</span>
+<span class="nc" id="L60">        return &quot;ERROR: could not add star&quot;;</span>
+      } else {
+<span class="nc" id="L62">        stars.add(star);</span>
+      }
+<span class="nc" id="L64">    }</span>
+<span class="nc" id="L65">    setStars(stars);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (stars.size() &gt; 0) {</span>
+      //sorts star list and adds the stars to the KDTree, with the median as the root
+<span class="nc" id="L68">      List&lt;Star&gt; starsCpy = new ArrayList&lt;&gt;(stars);</span>
+<span class="nc" id="L69">      starsCpy.sort(new StarXComparator());</span>
+<span class="nc" id="L70">      int midPoint = (starsCpy.size() - 1) / 2;</span>
+<span class="nc" id="L71">      Star median = starsCpy.get(midPoint);</span>
+<span class="nc" id="L72">      starsCpy.remove(midPoint);</span>
+<span class="nc" id="L73">      starsTree.clear();</span>
+<span class="nc" id="L74">      starsTree.insert(median);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">      for (Star star : starsCpy) {</span>
+<span class="nc" id="L76">        starsTree.insert(star);</span>
+<span class="nc" id="L77">      }</span>
+    }
+<span class="nc" id="L79">    return String.format(&quot;Read %d stars from %s&quot;, stars.size(), filename);</span>
+  }
+
+  /**
+   * Will create a new instance of Star and store it in the list of Star objects.
+   *
+   * @param values an array of strings representing the star ID, proper name and the
+   *               coordinates representing the star location
+   * @return the added Star, returns null if an error occurred
+   */
+  public Star addStar(String[] values) {
+    int starID;
+    double xPos;
+    double yPos;
+    double zPos;
+    try {
+<span class="fc" id="L95">      starID = Integer.parseInt(values[0]);</span>
+<span class="nc" id="L96">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L97">      return null;</span>
+<span class="fc" id="L98">    }</span>
+<span class="fc" id="L99">    String properName = values[1];</span>
+    try {
+<span class="fc" id="L101">      xPos = Double.parseDouble(values[2]);</span>
+<span class="nc" id="L102">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L103">      return null;</span>
+<span class="fc" id="L104">    }</span>
+    try {
+<span class="fc" id="L106">      yPos = Double.parseDouble(values[3]);</span>
+<span class="nc" id="L107">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L108">      return null;</span>
+<span class="fc" id="L109">    }</span>
+    try {
+<span class="fc" id="L111">      zPos = Double.parseDouble(values[4]);</span>
+<span class="nc" id="L112">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L113">      return null;</span>
+<span class="fc" id="L114">    }</span>
+<span class="fc" id="L115">    return new Star(starID, properName, xPos, yPos, zPos);</span>
+  }
+
+  /**
+   * When given a star name as an argument, will determine it's validity and return
+   * the relevant portion of the argument.
+   * @param starName star name which should be surrounded by double quotes
+   * @return star name without double quotes or null if argument is invalid.
+   */
+  public String parseStarName(String starName) {
+<span class="fc" id="L125">    int strLen = starName.length();</span>
+<span class="pc bpc" id="L126" title="1 of 4 branches missed.">    if (starName.charAt(0) == '&quot;' &amp;&amp; starName.charAt(strLen - 1) == '&quot;') {</span>
+<span class="fc" id="L127">      return starName.substring(1, strLen - 1);</span>
+    } else {
+<span class="fc" id="L129">      return null;</span>
+    }
+  }
+
+  /**
+   * Finds the location of a star given its proper name.
+   *
+   * @param name the proper name a star which has been loaded
+   * @return the Star object specified by the name
+   */
+  public Star findStar(String name) {
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">    if (name.length() != 0) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">      for (Star star : stars) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (star.getName().equals(name)) {</span>
+<span class="fc" id="L143">          return star;</span>
+        }
+<span class="fc" id="L145">      }</span>
+    }
+<span class="fc" id="L147">    return null;</span>
+  }
+
+  /**
+   * Adds the distance of the star to the TreeMap.
+   *
+   * @param distances TreeMap with distance as the key and a list of star IDs that distance
+   *                  away as the value
+   * @param id the star ID
+   * @param dist distance the star is from the center point
+   */
+  public void addDistance(TreeMap&lt;Double, List&lt;Integer&gt;&gt; distances, int id, double dist) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    if (distances.get(dist) == null) {</span>
+<span class="fc" id="L160">      List&lt;Integer&gt; starIDs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L161">      starIDs.add(id);</span>
+<span class="fc" id="L162">      distances.put(dist, starIDs);</span>
+<span class="fc" id="L163">    } else {</span>
+<span class="fc" id="L164">      distances.get(dist).add(id);</span>
+    }
+<span class="fc" id="L166">  }</span>
+
+  /**
+   * getter method for the number of stars currently loaded.
+   *
+   * @return number of loaded stars
+   */
+  public int getNumStars() {
+<span class="fc" id="L174">    return this.stars.size();</span>
+  }
+
+  /**
+   * getter method for the List of Star objects.
+   *
+   * @return List of currently loaded Star objects
+   */
+  public List&lt;Star&gt; getStars() {
+<span class="fc" id="L183">    return this.stars;</span>
+  }
+
+  /**
+   * Gets the k-d tree where the stars are stored.
+   * @return k-d tree containing stars
+   */
+  public KDTree&lt;Star&gt; getStarsTree() {
+<span class="fc" id="L191">    return this.starsTree;</span>
+  }
+
+  /**
+   * Sets the list of stars.
+   * @param starList list containing stars
+   */
+  public void setStars(List&lt;Star&gt; starList) {
+<span class="fc" id="L199">    this.stars = starList;</span>
+<span class="fc" id="L200">    starMap.clear();</span>
+<span class="fc" id="L201">  }</span>
+
+  /**
+   * Creates a hash map mapping ID to star object.
+   * @return the hash map just created
+   */
+  public HashMap&lt;Integer, Star&gt; createHash() {
+<span class="nc" id="L208">    starMap.clear();</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">    for (Star star : this.stars) {</span>
+<span class="nc" id="L210">      starMap.put(star.getId(), star);</span>
+<span class="nc" id="L211">    }</span>
+<span class="nc" id="L212">    return starMap;</span>
+  }
+
+  /**
+   * Returns a hash map of stars.
+   * @return a hash map of stars mapping ID to star object
+   */
+  public HashMap&lt;Integer, Star&gt; getHash() {
+<span class="nc" id="L220">    return starMap;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

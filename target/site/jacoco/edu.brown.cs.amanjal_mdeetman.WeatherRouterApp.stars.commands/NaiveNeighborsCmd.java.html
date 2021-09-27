@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NaiveNeighborsCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands</a> &gt; <span class="el_source">NaiveNeighborsCmd.java</span></div><h1>NaiveNeighborsCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.Star;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
+
+/**
+ * Class representing the naive_neighbors command.
+ */
+public class NaiveNeighborsCmd implements ICallable {
+  private final StarsCmd starsCmd;
+
+  /**
+   * Constructor for NaiveNeighborsCmd which initializes instance variables.
+   * @param stars instance of the StarsCmd object which contains the list of stars
+   *                 as well as helper methods
+   */
+<span class="fc" id="L21">  public NaiveNeighborsCmd(StarsCmd stars) {</span>
+<span class="fc" id="L22">    starsCmd = stars;</span>
+<span class="fc" id="L23">  }</span>
+
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L27" title="All 4 branches covered.">    if (tokens.size() != 2 &amp;&amp; tokens.size() != 4) {</span>
+<span class="fc" id="L28">      return &quot;ERROR: naive_neighbors command should have 2 or 4 arguments&quot;;</span>
+    }
+<span class="fc" id="L30">    double[] location = new double[3];</span>
+    int k;
+    try {
+<span class="fc" id="L33">      k = Integer.parseInt(tokens.get(0));</span>
+<span class="nc" id="L34">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L35">      return &quot;ERROR: first argument should be a number representing the number of neighbors&quot;;</span>
+<span class="fc" id="L36">    }</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">    if (tokens.size() == 2) {</span>
+<span class="fc" id="L38">      String starName = starsCmd.parseStarName(tokens.get(1));</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">      if (starName == null) {</span>
+<span class="fc" id="L40">        return &quot;ERROR: &quot;</span>
+          + &quot;second argument should be the star name and should be surrounded in quotation marks&quot;;
+      }
+<span class="fc" id="L43">      Star targetStar = starsCmd.findStar(starName);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">      if (targetStar == null) {</span>
+<span class="fc" id="L45">        return &quot;ERROR: star with name &quot; + starName + &quot; not found&quot;;</span>
+      } else {
+<span class="fc" id="L47">        location = targetStar.getCoords();</span>
+<span class="fc" id="L48">        return search(k, location[0], location[1], location[2], starName);</span>
+      }
+    } else {
+      //coordinates instead of star name given
+<span class="fc bfc" id="L52" title="All 2 branches covered.">      for (int i = 0; i &lt; 3; i++) {</span>
+        try {
+<span class="fc" id="L54">          location[i] = Double.parseDouble(tokens.get(i + 1));</span>
+<span class="nc" id="L55">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L56">          return &quot;ERROR: argument &quot; + i + &quot; should be a number representing a coordinate&quot;;</span>
+<span class="fc" id="L57">        }</span>
+      }
+<span class="fc" id="L59">      return search(k, location[0], location[1], location[2], &quot;&quot;);</span>
+    }
+  }
+
+  /**
+   * Will search all loaded stars and find the k closest stars to the indicated starting point.
+   *
+   * @param k number of stars which the user wants to output
+   * @param x x coordinate of the center point
+   * @param y y coordinate of the center point
+   * @param z z coordinate of the center point
+   * @param name Proper name of the star if the user used a name instead of coordinates.
+   *             This star will not be included in the output. Empty string should be passed
+   *             in to indicate that the user did not pick a specific star as the starting point.
+   * @return either an error message or, if successful, will contain a list of the k star IDs
+   * which are closest to the center point in order from closest to furthest.
+   */
+  public String search(int k, double x, double y, double z, String name) {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (k &lt; 0) {</span>
+<span class="fc" id="L78">      return &quot;ERROR: number of neighbors must be non-negative&quot;;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">    } else if (k == 0) {</span>
+<span class="fc" id="L80">      return &quot;&quot;;</span>
+    }
+<span class="fc" id="L82">    TreeMap&lt;Double, List&lt;Integer&gt;&gt; distances = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L83">    List&lt;Star&gt; stars = starsCmd.getStars();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">    for (Star star : stars) {</span>
+<span class="fc" id="L85">      double xDif = Math.abs(x - star.getX());</span>
+<span class="fc" id="L86">      double yDif = Math.abs(y - star.getY());</span>
+<span class="fc" id="L87">      double zDif = Math.abs(z - star.getZ());</span>
+      //distance from the center point squared is calculated
+<span class="fc" id="L89">      double distance = xDif * xDif + yDif * yDif + zDif * zDif;</span>
+<span class="fc bfc" id="L90" title="All 4 branches covered.">      if (!(name.length() != 0 &amp;&amp; name.equals(star.getName()))) {</span>
+<span class="fc" id="L91">        starsCmd.addDistance(distances, star.getId(), distance);</span>
+      }
+<span class="fc" id="L93">    }</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    if (distances.size() == 0) {</span>
+<span class="nc" id="L95">      return &quot;&quot;;</span>
+    }
+<span class="fc" id="L97">    int starsOut = 0;</span>
+<span class="fc" id="L98">    StringBuilder out = new StringBuilder();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">    for (int i = 0; i &lt; stars.size(); i++) {</span>
+<span class="fc" id="L100">      List&lt;Integer&gt; starIDs = distances.pollFirstEntry().getValue();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">      if (starsOut + starIDs.size() &gt; k) {</span>
+        //randomizes the list to remove bias when only a portion of the list will be used
+<span class="fc" id="L103">        Collections.shuffle(starIDs);</span>
+<span class="fc" id="L104">        int tieNum = k - starsOut;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (int j = 0; j &lt; tieNum; j++) {</span>
+<span class="fc" id="L106">          out.append(starIDs.get(j)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L107">          starsOut++;</span>
+        }
+<span class="fc" id="L109">      } else {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (Integer starID : starIDs) {</span>
+<span class="fc" id="L111">          out.append(starID).append(&quot;\n&quot;);</span>
+<span class="fc" id="L112">          starsOut++;</span>
+<span class="fc" id="L113">        }</span>
+      }
+<span class="fc bfc" id="L115" title="All 4 branches covered.">      if (starsOut == k || distances.size() == 0) {</span>
+<span class="fc" id="L116">        return out.substring(0, out.length() - 1);</span>
+      }
+    }
+<span class="nc" id="L119">    return out.substring(0, out.length() - 1);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

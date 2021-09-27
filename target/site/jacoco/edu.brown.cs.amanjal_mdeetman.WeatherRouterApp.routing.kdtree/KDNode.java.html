@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree</a> &gt; <span class="el_source">KDNode.java</span></div><h1>KDNode.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree;
+
+/**
+ * KDNode class which is what will make up the k-d tree.
+ * @param &lt;T&gt; The type of KDPoint which will be contained in the node
+ */
+public class KDNode&lt;T extends KDPoint&gt; {
+  private final int dimension;
+  private int keyDimension;
+  private double keyCoordinate;
+  private KDNode&lt;T&gt; left;
+  private KDNode&lt;T&gt; right;
+  private final T point;
+
+  /**
+   * Constructor for KDNode which initializes instance variables.
+   * @param newPoint The 'value' contained in the node
+   * @param depth Depth of this node in the tree.
+   */
+<span class="fc" id="L20">  public KDNode(T newPoint, int depth) {</span>
+<span class="fc" id="L21">    this.point = newPoint;</span>
+<span class="fc" id="L22">    this.dimension = point.getCoords().length;</span>
+<span class="fc" id="L23">    setKeyDimension(depth % dimension);</span>
+<span class="fc" id="L24">    this.left = null;</span>
+<span class="fc" id="L25">    this.right = null;</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * Sets the left child of this node.
+   * @param leftNode KDNode which will be it's left child
+   * @return returns true if successful and false otherwise
+   */
+  public boolean setLeft(KDNode&lt;T&gt; leftNode) {
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (leftNode.getDimension() == dimension) {</span>
+<span class="fc" id="L35">      this.left = leftNode;</span>
+<span class="fc" id="L36">      return true;</span>
+    }
+<span class="nc" id="L38">    return false;</span>
+  }
+
+  /**
+   * Sets the right child of this node.
+   * @param rightNode KDNode which will be it's right child
+   * @return returns true if successful and false otherwise
+   */
+  public boolean setRight(KDNode&lt;T&gt; rightNode) {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">    if (rightNode.getDimension() == dimension) {</span>
+<span class="fc" id="L48">      this.right = rightNode;</span>
+<span class="fc" id="L49">      return true;</span>
+    }
+<span class="nc" id="L51">    return false;</span>
+  }
+
+  /**
+   * Gets the left child.
+   * @return KDnode which is the left child
+   */
+  public KDNode&lt;T&gt; getLeft() {
+<span class="fc" id="L59">    return this.left;</span>
+  }
+
+  /**
+   * Gets the right child.
+   * @return KDNode which is the right child
+   */
+  public KDNode&lt;T&gt; getRight() {
+<span class="fc" id="L67">    return this.right;</span>
+  }
+
+  /**
+   * Gets the value associated with this node.
+   * @return the value of type T
+   */
+  public T getPoint() {
+<span class="fc" id="L75">    return this.point;</span>
+  }
+
+  /**
+   * Sets the relevant dimension and coordinate for this point.
+   * @param newKeyDim key dimension for this node.
+   */
+  public void setKeyDimension(int newKeyDim) {
+<span class="fc" id="L83">    this.keyDimension = newKeyDim;</span>
+<span class="fc" id="L84">    setKeyCoordinate(point.getCoords()[newKeyDim]);</span>
+<span class="fc" id="L85">  }</span>
+
+  /**
+   * returns the relevant dimension for this point.
+   * @return integer representing the index of the relevant coordinate.
+   */
+  public int getKeyDimension() {
+<span class="fc" id="L92">    return this.keyDimension;</span>
+  }
+
+  /**
+   * Sets the relevant coordinate for this point.
+   * @param keyCoord relevant coordinate.
+   */
+  private void setKeyCoordinate(double keyCoord) {
+<span class="fc" id="L100">    this.keyCoordinate = keyCoord;</span>
+<span class="fc" id="L101">  }</span>
+
+  /**
+   * Gets the relevant coordinate for this point.
+   * @return relevant coordinate
+   */
+  public double getKeyCoordinate() {
+<span class="fc" id="L108">    return this.keyCoordinate;</span>
+  }
+
+  /**
+   * Gets the dimension of the node, equivalent to the number of coordinates which
+   * represents its location.
+   * @return dimension
+   */
+  public int getDimension() {
+<span class="fc" id="L117">    return this.dimension;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

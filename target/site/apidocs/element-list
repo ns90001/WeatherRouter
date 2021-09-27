@@ -1,0 +1,12 @@
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.modelling
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.csv
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather

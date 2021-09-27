@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StarXComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars</a> &gt; <span class="el_source">StarXComparator.java</span></div><h1>StarXComparator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars;
+
+import java.util.Comparator;
+
+/**
+ * Comparator which compares based on x coordinate of a star.
+ */
+public class StarXComparator implements Comparator&lt;Star&gt; {
+
+  /**
+   * Empty constructor for StarXComparator.
+   */
+<span class="fc" id="L13">  public StarXComparator() { }</span>
+
+  /**
+   * Compares stars by x coordinate.
+   * @param star1 first star which you want to compare.
+   * @param star2 second star which you want to compare.
+   * @return returns 1 if x coord of first is bigger than second, 0 if they are equal,
+   * and -1 otherwise.
+   */
+  @Override
+  public int compare(Star star1, Star star2) {
+<span class="fc" id="L24">    double x1 = star1.getX();</span>
+<span class="fc" id="L25">    double x2 = star2.getX();</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">    if (x1 &gt; x2) {</span>
+<span class="fc" id="L27">      return 1;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    } else if (x1 == x2) {</span>
+<span class="fc" id="L29">      return 0;</span>
+    } else {
+<span class="fc" id="L31">      return -1;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

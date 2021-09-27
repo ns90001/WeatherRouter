@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dijkstra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra</a> &gt; <span class="el_source">Dijkstra.java</span></div><h1>Dijkstra.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+/**
+ * The Dijkstra class which can be used to find the shortest path between two nodes in a graph.
+ *
+ * @param &lt;N&gt; A generic type representing the node
+ * @param &lt;E&gt; A generic type representing the edge
+ */
+public class Dijkstra&lt;N extends DirectedNode&lt;N, E&gt;, E extends DirectedEdge&lt;N&gt;&gt; {
+
+  //graph represented using a priority queue
+  private final PriorityQueue&lt;N&gt; graph;
+  private final NodeComparator&lt;N, E&gt; nodeComparator;
+<span class="fc" id="L24">  private List&lt;E&gt; resetEdges = new ArrayList&lt;&gt;();</span>
+
+
+  /**
+   * Constructor for Dijkstra which initializes the graph as null.
+   */
+<span class="fc" id="L30">  public Dijkstra() {</span>
+<span class="fc" id="L31">    nodeComparator = new NodeComparator();</span>
+<span class="fc" id="L32">    graph = new PriorityQueue&lt;&gt;(nodeComparator);</span>
+<span class="fc" id="L33">  }</span>
+
+  /**
+   * Finds the shortest path between two nodes in the graph.
+   * The prevEdge and prevNode methods can be called on the endNode to find the path.
+   * @param startNode starting node
+   * @param endNode ending node
+   * @param extension boolean value on whether to use A* method or not
+   */
+  public void shortestPath(N startNode, N endNode, boolean extension, List&lt;Way&gt; edgeList) {
+<span class="fc" id="L43">    nodeComparator.setEstimator(extension);</span>
+    //all other nodes have distance infinity
+<span class="fc" id="L45">    startNode.setDistance(0);</span>
+<span class="fc" id="L46">    Set&lt;N&gt; visited = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L47">    graph.add(startNode);</span>
+<span class="fc" id="L48">    int counter = 0;</span>
+    //creates a priority queue which sorts based on the distance of the node
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    while (!graph.isEmpty()) {</span>
+<span class="fc" id="L51">      counter++;</span>
+      //removes and returns node with min value from priority queue
+<span class="fc" id="L53">      N curr = graph.poll();</span>
+<span class="fc" id="L54">      visited.add(curr);</span>
+      //if the node with the shortest distance is the end node, then we must have found the shortest
+      //path to the end node
+<span class="fc bfc" id="L57" title="All 2 branches covered.">      if (curr == endNode) {</span>
+<span class="fc" id="L58">        break;</span>
+      }
+      //iterates through every outgoing edge from the node
+<span class="fc bfc" id="L61" title="All 2 branches covered.">      for (E edge: curr.getOutgoingEdges(edgeList)) {</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if(!resetEdges.contains(edge)) { // if not contained then add</span>
+<span class="fc" id="L63">          resetEdges.add(edge);</span>
+        }
+        // edge returned from getOutgoingEdge
+<span class="fc" id="L66">        N targetNode = edge.getEnd();</span>
+        // dist = distance at current node + weight of edge
+        // to targetNode plus the distance from targetNode to the endNode
+<span class="fc" id="L69">        double heuristicAddition = 0;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (extension) {</span>
+          // take into account A* and weather heuristic
+<span class="fc" id="L72">          heuristicAddition = edge.getDistToEnd(endNode);</span>
+<span class="fc" id="L73">          targetNode.setHeuristic(heuristicAddition);</span>
+        }
+<span class="fc" id="L75">        double dist = curr.getDistance() + edge.getWeight() + heuristicAddition;</span>
+        // if dist is less then dist in node, reset targetNode dist and prev
+<span class="fc bfc" id="L77" title="All 2 branches covered.">          if (dist &lt; targetNode.getDistance()) {</span>
+<span class="fc" id="L78">            targetNode.setDistance(dist);</span>
+<span class="fc" id="L79">            targetNode.setPrevNode(curr);</span>
+<span class="fc" id="L80">            targetNode.setPrevEdge(edge);</span>
+          }
+        //removes and re-adds because dist may have changed so order of priority queue
+        //needs to update.
+<span class="fc" id="L84">        graph.remove(targetNode);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (!visited.contains(targetNode)) {</span>
+<span class="fc" id="L86">          graph.add(targetNode);</span>
+        }
+<span class="fc" id="L88">      }</span>
+<span class="fc" id="L89">    }</span>
+<span class="fc" id="L90">    System.out.println(&quot;finished&quot; + counter);</span>
+<span class="fc" id="L91">  }</span>
+
+  public void resetEdge() {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">    for(E edge : resetEdges) {</span>
+<span class="fc" id="L95">      edge.getStart().setDistance(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L96">      edge.getStart().setPrevEdge(null);</span>
+<span class="fc" id="L97">      edge.getStart().setPrevNode(null);</span>
+<span class="fc" id="L98">      edge.getEnd().setDistance(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L99">      edge.getEnd().setPrevEdge(null);</span>
+<span class="fc" id="L100">      edge.getEnd().setPrevNode(null);</span>
+<span class="fc" id="L101">    }</span>
+<span class="fc" id="L102">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

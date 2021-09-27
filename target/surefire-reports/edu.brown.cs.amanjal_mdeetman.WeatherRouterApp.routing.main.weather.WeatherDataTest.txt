@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.weather.WeatherDataTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.117 s <<< FAILURE! - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.weather.WeatherDataTest
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.weather.WeatherDataTest.testCreateData  Time elapsed: 0.115 s  <<< ERROR!
+java.lang.Exception: wObj not found or created
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.weather.WeatherDataTest.testCreateData(WeatherDataTest.java:39)
+

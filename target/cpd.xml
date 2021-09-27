@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+   <duplication lines="18" tokens="132">
+      <file line="131"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/MapComponents/MapNode.java"/>
+      <file line="134"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/WaysCmd.java"/>
+      <codefragment><![CDATA[            } else if (type.equals("track")) {
+              traversable = 10;
+            } else if (type.equals("service")) {
+              traversable = serviceSpeed;
+            } else if (type.equals("secondary")) {
+              traversable = secondarySpeed;
+            } else if (type.equals ("residential")) {
+              traversable = residentialSpeed;
+            } else if (type.equals ("primary")) {
+              traversable = primarySpeed;
+            } else if (type.equals("path")) {
+              traversable = 5;
+            } else if (type.equals("motorway_link")) {
+              traversable = motorway_linkSpeed;
+            } else if (type.equals("motorway")) {
+              traversable = motorwaySpeed;
+            } else if (type.equals("footway")) {
+              traversable = 10;]]></codefragment>
+   </duplication>
+   <duplication lines="18" tokens="112">
+      <file line="48"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherDataStorage.java"/>
+      <file line="87"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherDataStorage.java"/>
+      <codefragment><![CDATA[    URL urlForGetRequest = new URL(urlString);
+    String readLine = null;
+    HttpURLConnection conn = (HttpURLConnection) urlForGetRequest.openConnection();
+    conn.setRequestMethod("GET");
+    int responseCode = conn.getResponseCode();
+
+
+    if (responseCode == HttpURLConnection.HTTP_OK) {
+      BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+      StringBuffer response = new StringBuffer();
+      while ((readLine = in.readLine()) != null) {
+        response.append(readLine);
+      }
+      in.close();
+
+      try {
+        JSONObject rootObject = new JSONObject(response.toString());
+        JSONObject props = rootObject.getJSONObject("properties");]]></codefragment>
+   </duplication>
+   <duplication lines="18" tokens="100">
+      <file line="29"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NaiveNeighborsCmd.java"/>
+      <file line="38"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NeighborsCmd.java"/>
+      <codefragment><![CDATA[    }
+    double[] location = new double[3];
+    int k;
+    try {
+      k = Integer.parseInt(tokens.get(0));
+    } catch (NumberFormatException e) {
+      return "ERROR: first argument should be a number representing the number of neighbors";
+    }
+    if (tokens.size() == 2) {
+      String starName = starsCmd.parseStarName(tokens.get(1));
+      if (starName == null) {
+        return "ERROR: "
+          + "second argument should be the star name and should be surrounded in quotation marks";
+      }
+      Star targetStar = starsCmd.findStar(starName);
+      if (targetStar == null) {
+        return "ERROR: star with name " + starName + " not found";
+      } else {]]></codefragment>
+   </duplication>
+   <duplication lines="18" tokens="100">
+      <file line="28"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NaiveRadiusCmd.java"/>
+      <file line="38"
+            path="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/RadiusCmd.java"/>
+      <codefragment><![CDATA[    }
+    double[] location = new double[3];
+    double r;
+    try {
+      r = Double.parseDouble(tokens.get(0));
+    } catch (NumberFormatException e) {
+      return "ERROR: first argument should be a number representing the radius";
+    }
+    if (tokens.size() == 2) {
+      String starName = starsCmd.parseStarName(tokens.get(1));
+      if (starName == null) {
+        return "ERROR: "
+          + "second argument should be the star name and should be surrounded in quotation marks";
+      }
+      Star targetStar = starsCmd.findStar(starName);
+      if (targetStar == null) {
+        return "ERROR: star with name " + starName + " not found";
+      } else {]]></codefragment>
+   </duplication>
+</pmd-cpd>

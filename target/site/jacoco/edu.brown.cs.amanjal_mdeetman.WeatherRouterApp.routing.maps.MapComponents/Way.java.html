@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Way.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents</a> &gt; <span class="el_source">Way.java</span></div><h1>Way.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherObject;
+
+/**
+ * Class representing a way.
+ */
+public class Way implements DirectedEdge&lt;MapNode&gt; {
+
+  private final MapNode start;
+  private final MapNode end;
+  private final String id;
+  private double weight;
+<span class="fc" id="L15">  private double distToEnd = -1;</span>
+<span class="fc" id="L16">  private double weather = 0;</span>
+  private double speed;
+  private WeatherObject weatherObj;
+
+  /**
+   * Constructor for Way which initializes instance variables.
+   * @param startNode start node of way
+   * @param endNode end node of way
+   * @param wayId id of way (including /w/)
+   * @param traversable indicates if the way is traversable
+   */
+<span class="fc" id="L27">  public Way(MapNode startNode, MapNode endNode, String wayId, double traversable) {</span>
+<span class="fc" id="L28">    start = startNode;</span>
+<span class="fc" id="L29">    end = endNode;</span>
+<span class="fc" id="L30">    id = wayId;</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    if (traversable != 0) {</span>
+<span class="fc" id="L32">      this.speed = traversable;</span>
+      //haversine formula not calculated immediately as it may slow down program
+<span class="fc" id="L34">      weight = -1;</span>
+    } else {
+      //represents a non-traversable way
+<span class="fc" id="L37">      weight = Double.POSITIVE_INFINITY;</span>
+    }
+<span class="fc" id="L39">  }</span>
+
+  /**
+   * Gets the node at the start of the way.
+   * @return start node
+   */
+  @Override
+  public MapNode getStart() {
+<span class="fc" id="L47">    return this.start;</span>
+  }
+
+  /**
+   * Gets the node at the end of the way.
+   * @return end node.
+   */
+  @Override
+  public MapNode getEnd() {
+<span class="fc" id="L56">    return this.end;</span>
+  }
+
+  /**
+   * Gets weight of the edge. In this case, it is the distance between the start and end node.
+   * @return Haversine distance between the start and end node
+   */
+  @Override
+  public double getWeight() {
+    //weight initialized to be -1 so this is only calculated when necessary
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    if (weight &lt; 0) {</span>
+<span class="fc" id="L67">      weight = getHaversineDistance(this.start, this.end)/this.speed;</span>
+    }
+<span class="fc" id="L69">    return weight;</span>
+  }
+
+  /**
+   * toString method for Way.
+   * @return the id of the way
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L78">    return this.id;</span>
+  }
+
+  /**
+   * Calculates the Haversine distance between the end node of the way to the node passed in.
+   * @param node - of type N
+   * @return Haversine distance from end node of edge to node passed in
+   */
+  @Override
+  public double getDistToEnd(MapNode node) {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">    if (distToEnd &lt; 0) {</span>
+<span class="fc" id="L89">      distToEnd = getHaversineDistance(this.getEnd(), node);</span>
+    }
+<span class="fc" id="L91">    return distToEnd;</span>
+  }
+
+  /**
+   * Gets the haversine distance between two MapNode objects.
+   * @param node1 a MapNode with latitude and longitude.
+   * @param node2 a MapNode with latitude and longitude.
+   * @return haversine distance between the two nodes.
+   */
+  public double getHaversineDistance(MapNode node1, MapNode node2) {
+<span class="fc" id="L101">    double lat1 = Math.toRadians(node1.getLatitude());</span>
+<span class="fc" id="L102">    double long1 = Math.toRadians(node1.getLongitude());</span>
+<span class="fc" id="L103">    double lat2 = Math.toRadians(node2.getLatitude());</span>
+<span class="fc" id="L104">    double long2 = Math.toRadians(node2.getLongitude());</span>
+    //Haversine distance formula
+<span class="fc" id="L106">    double latDiff = (lat2 - lat1) / 2;</span>
+<span class="fc" id="L107">    double longDiff = (long2 - long1) / 2;</span>
+<span class="fc" id="L108">    double a = Math.pow(Math.sin(latDiff), 2);</span>
+<span class="fc" id="L109">    double b = a + (Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(longDiff), 2));</span>
+    //no need to multiply by 2r because it is a constant
+<span class="fc" id="L111">    return Math.asin(Math.sqrt(b));</span>
+  }
+
+  @Override
+  public void setWeatherHeuristic(double num) {
+<span class="fc" id="L116">    this.weather = num;</span>
+<span class="fc" id="L117">  }</span>
+
+  @Override
+  public double getWeatherHeuristic() {
+<span class="fc" id="L121">    return this.weather;</span>
+  }
+
+  @Override
+  public void setWeight(double weightNew) {
+<span class="fc" id="L126">    weight = weightNew;</span>
+<span class="fc" id="L127">  }</span>
+
+  /**
+   * Set the weather data of the way
+   * @param newData - weatherData object
+   */
+  public void setWeatherData(WeatherObject newData) {
+<span class="fc" id="L134">    weatherObj = newData;</span>
+<span class="fc" id="L135">  }</span>
+
+  /**
+   * Getters for weatehr object
+   * @return - weather object
+   */
+  public WeatherObject getWeatherObj() {
+<span class="fc" id="L142">    return weatherObj;</span>
+  }
+
+  /**
+   * Returns id of the way
+   * @return - string
+   */
+  public String getId() {
+<span class="nc" id="L150">    return id;</span>
+  }
+
+  /**
+   * Returns the speed of the way
+   * @return -- double
+   */
+  public double getSpeed() {
+<span class="nc" id="L158">    return this.speed;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

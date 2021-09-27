@@ -1,0 +1,103 @@
+package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.MultiTreeMap;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDPoint;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDTree;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.Star;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * NeighborsCmd class which runs the the nearest neighbors search with use of a k-d tree.
+ */
+public class NeighborsCmd implements ICallable {
+  private final StarsCmd starsCmd;
+
+  /**
+   * Constructor for NeighborsCmd which initializes instance variables.
+   * @param stars instance of the StarsCmd object which contains the list of stars
+   *                 as well as helper methods
+   */
+  public NeighborsCmd(StarsCmd stars) {
+    starsCmd = stars;
+  }
+
+  /**
+   * Executes the neighbors command.
+   *
+   * @param tokens arguments for the neighbors command
+   * @return output of the k nearest neighbors from closest to farthest or an
+   * error message if an error occurs
+   */
+  @Override
+  public String run(List<String> tokens) {
+    if (tokens.size() != 2 && tokens.size() != 4) {
+      return "ERROR: neighbors command should have 2 or 4 arguments";
+    }
+    double[] location = new double[3];
+    int k;
+    try {
+      k = Integer.parseInt(tokens.get(0));
+    } catch (NumberFormatException e) {
+      return "ERROR: first argument should be a number representing the number of neighbors";
+    }
+    if (tokens.size() == 2) {
+      String starName = starsCmd.parseStarName(tokens.get(1));
+      if (starName == null) {
+        return "ERROR: "
+          + "second argument should be the star name and should be surrounded in quotation marks";
+      }
+      Star targetStar = starsCmd.findStar(starName);
+      if (targetStar == null) {
+        return "ERROR: star with name " + starName + " not found";
+      } else {
+        return search(k, targetStar.getCoords(), targetStar.getId());
+      }
+    } else {
+      //coordinates instead of star name given
+      for (int i = 0; i < 3; i++) {
+        try {
+          location[i] = Double.parseDouble(tokens.get(i + 1));
+        } catch (NumberFormatException e) {
+          return "ERROR: argument " + i + " should be a number representing a coordinate";
+        }
+      }
+      return search(k, location, -1);
+    }
+  }
+
+  /**
+   * Performs the nearest neighbors search with a k-d tree.
+   *
+   * @param k number of neighbors which must be found.
+   * @param location the target location
+   * @param id the id of the star which should be excluded from the output. Should be
+   *           -1 if all stars should be included
+   * @return output of the k nearest neighbors from closest to farthest or an
+   *  error message if an error occurs
+   */
+  public String search(int k, double[] location, int id) {
+    if (k < 0) {
+      return "ERROR: number of neighbors must be non-negative";
+    } else if (k == 0) {
+      return "";
+    }
+    KDTree starsTree = starsCmd.getStarsTree();
+    MultiTreeMap<Double, KDPoint> neighbors = starsTree.kNearestNeighbors(k, location, id);
+    if (neighbors.size() == 0) {
+      return "";
+    }
+    StringBuilder out = new StringBuilder();
+    while (true) {
+      Map.Entry<Double, List<KDPoint>> minEntry = neighbors.pollFirstEntry();
+      if (minEntry == null) {
+        return out.substring(0, out.length() - 1);
+      }
+      for (KDPoint star : minEntry.getValue()) {
+        out.append(star.getId()).append("\n");
+      }
+    }
+  }
+}

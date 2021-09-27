@@ -1,0 +1,5 @@
+INPUT
+map data/maps/WayTable_Wrong.sqlite3
+OUTPUT
+ERROR:
+END

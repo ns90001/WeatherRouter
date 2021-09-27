@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RouteCreator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp</a> &gt; <span class="el_source">RouteCreator.java</span></div><h1>RouteCreator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.MapCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.RouteCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherData;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RouteCreator {
+
+  private MapCmd mapCmd;
+  private List&lt;Way&gt; existingWays;
+  private WeatherData wRef;
+<span class="fc" id="L18">  public RouteCreator(MapCmd mapCmd) {</span>
+<span class="fc" id="L19">    this.mapCmd = mapCmd;</span>
+<span class="fc" id="L20">    this.existingWays = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">    wRef = new WeatherData();</span>
+<span class="fc" id="L22">  }</span>
+
+
+  public List&lt;List&lt;Way&gt;&gt; createRoutes(MapNode start, MapNode end, String startTime, int reRoutes)
+      throws Exception {
+    // find initial route (should be a list of ways)
+<span class="fc" id="L28">    RouteCmd thisRouteCmd = new RouteCmd(mapCmd);</span>
+    // create tokens to pass into RouteCmd
+<span class="fc" id="L30">    List&lt;String&gt; tokens = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">    String add1 = &quot;&quot; + start.getLatitude();</span>
+<span class="fc" id="L32">    String add2 = &quot;&quot; + start.getLongitude();</span>
+<span class="fc" id="L33">    String add3 = &quot;&quot; + end.getLatitude();</span>
+<span class="fc" id="L34">    String add4 = &quot;&quot; + end.getLongitude();</span>
+<span class="fc" id="L35">    tokens.add(add1);</span>
+<span class="fc" id="L36">    tokens.add(add2);</span>
+<span class="fc" id="L37">    tokens.add(add3);</span>
+<span class="fc" id="L38">    tokens.add(add4);</span>
+<span class="fc" id="L39">    thisRouteCmd.run(tokens);</span>
+<span class="fc" id="L40">    List&lt;Way&gt; firstRoute = thisRouteCmd.getFirstRouteList();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    for (Way way : firstRoute) {</span>
+<span class="fc" id="L42">      existingWays.add(way);</span>
+<span class="fc" id="L43">    }</span>
+    // Attach wayWeatherData to each way
+<span class="fc" id="L45">    attachWeatherData(firstRoute, startTime);</span>
+    //  Use method to check whether weather threshold is too high
+<span class="fc" id="L47">    Double routeDist = calculateRouteDistance(firstRoute);</span>
+    // Check whether the weather is bad enough a reroute is warranted
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    boolean badWeather = (checkWeatherThreshold(firstRoute, routeDist) &gt; 0); // edit this eventually</span>
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">    if (firstRoute.isEmpty() || !badWeather) {</span>
+<span class="fc" id="L51">      List&lt;List&lt;Way&gt;&gt; retList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L52">      retList.add(firstRoute);</span>
+<span class="fc" id="L53">      existingWays = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L54">      this.resetEdgeWeights(firstRoute);</span>
+<span class="fc" id="L55">      return retList;</span>
+    } else {
+      // Do route calculation again with weather heuristics added
+<span class="fc" id="L58">      List&lt;Way&gt; secondRoute = firstRoute;</span>
+<span class="fc" id="L59">      Double originalRouteDist = this.lengthOfRoute(firstRoute); // length of original route</span>
+<span class="fc" id="L60">      Double bestRoute = originalRouteDist;</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">      for(int i = 0; i &lt; reRoutes; i++) { // loop for number of reRoutes to do</span>
+<span class="fc" id="L62">        RouteCmd newRouteCmd = new RouteCmd(mapCmd);</span>
+<span class="fc" id="L63">        newRouteCmd.setWays(existingWays);</span>
+<span class="fc" id="L64">        newRouteCmd.setFirstRouteList(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L65">        newRouteCmd.run(tokens); // run routing with original ways having weatherHeuristic added</span>
+<span class="fc" id="L66">        List&lt;Way&gt; newRoute = newRouteCmd.getFirstRouteList();</span>
+<span class="nc" id="L67">        attachWeatherData(newRoute, startTime); // attach weather data to new route</span>
+<span class="nc" id="L68">        Double length = this.lengthOfRoute(newRoute);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (length &lt; bestRoute) { // check if new route is better then the current best route</span>
+<span class="nc" id="L70">          bestRoute = length;</span>
+<span class="nc" id="L71">          secondRoute = newRoute; // if so set the weather_adjusted route to new route</span>
+        }
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        for (Way w : newRoute) { // add new ways from newroute to existing ways</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">          if (!existingWays.contains(w)) {</span>
+<span class="nc" id="L75">            existingWays.add(w);</span>
+          }
+<span class="nc" id="L77">        }</span>
+      }
+      // If the route did change, offer both routes
+<span class="nc bnc" id="L80" title="All 2 branches missed.">      if (!sameRoute(firstRoute, secondRoute) ) {</span>
+<span class="nc" id="L81">        List&lt;List&lt;Way&gt;&gt; retList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L82">        retList.add(firstRoute);</span>
+<span class="nc" id="L83">        retList.add(secondRoute);</span>
+<span class="nc" id="L84">        existingWays = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L85">        this.resetEdgeWeights(firstRoute);</span>
+<span class="nc" id="L86">        this.resetEdgeWeights(secondRoute);</span>
+<span class="nc" id="L87">        return retList;</span>
+
+        // If the route didn't change, offer only the first route
+      } else {
+<span class="nc" id="L91">        List&lt;List&lt;Way&gt;&gt; retList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L92">        retList.add(firstRoute);</span>
+<span class="nc" id="L93">        existingWays = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L94">        this.resetEdgeWeights(firstRoute);</span>
+<span class="nc" id="L95">        return retList;</span>
+      }
+    }
+
+  }
+
+  public boolean sameRoute(List&lt;Way&gt; r1, List&lt;Way&gt; r2) {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    if (r1.size() != r2.size()) {</span>
+<span class="fc" id="L103">      return false;</span>
+    }
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    for (int i=0; i&lt;r1.size(); i++) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">      if (!(r1.equals(r2))) {</span>
+<span class="fc" id="L107">        return false;</span>
+      }
+    }
+<span class="fc" id="L110">    return true;</span>
+  }
+
+  public void attachWeatherData(List&lt;Way&gt; ways, String time) throws Exception {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">    for (Way way : ways) {</span>
+<span class="fc" id="L115">      WeatherObject newData = wRef.createData(way.getStart(), way.getEnd(), time);</span>
+<span class="fc" id="L116">      way.setWeatherData(newData);</span>
+<span class="fc" id="L117">      way.setWeatherHeuristic(WeatherData.createHeuristic(newData));</span>
+<span class="fc" id="L118">      Double dist = way.getHaversineDistance(way.getStart(), way.getEnd());</span>
+<span class="fc" id="L119">      way.setWeight(dist + dist*way.getWeatherHeuristic());</span>
+<span class="fc" id="L120">    }</span>
+<span class="fc" id="L121">  }</span>
+
+  public double calculateRouteDistance(List&lt;Way&gt; route) {
+<span class="fc" id="L124">    double totalDist = 0;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    for (Way way : route) {</span>
+<span class="fc" id="L126">      totalDist = totalDist + way.getHaversineDistance(way.getStart(), way.getEnd());</span>
+<span class="fc" id="L127">    }</span>
+<span class="fc" id="L128">    return totalDist;</span>
+  }
+
+  public double checkWeatherThreshold(List&lt;Way&gt; route, double routeDist) {
+<span class="fc" id="L132">    double returnThreshold = 0;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">    for (Way way : route) {</span>
+<span class="fc" id="L134">      returnThreshold = returnThreshold +</span>
+<span class="fc" id="L135">      (way.getWeatherHeuristic()) * way.getHaversineDistance(way.getStart(), way.getEnd()) / routeDist;</span>
+<span class="fc" id="L136">    }</span>
+<span class="fc" id="L137">    return returnThreshold;</span>
+  }
+
+  public double lengthOfRoute(List&lt;Way&gt; route) {
+<span class="fc" id="L141">    double total = 0;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">    for(Way way: route) {</span>
+<span class="fc" id="L143">      total += way.getWeight();</span>
+<span class="fc" id="L144">    }</span>
+<span class="fc" id="L145">    return total;</span>
+  }
+
+  public void resetEdgeWeights(List&lt;Way&gt; ways){
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">    for(Way w: ways) {</span>
+<span class="nc" id="L150">      w.setWeight(w.getHaversineDistance(w.getStart(), w.getEnd()));</span>
+<span class="nc" id="L151">      w.setWeatherHeuristic(0);</span>
+<span class="nc" id="L152">    }</span>
+<span class="fc" id="L153">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

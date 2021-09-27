@@ -1,0 +1,7 @@
+INPUT
+map data/maps/smallMaps.sqlite3
+routes "1" "2" "not a street" "route"
+OUTPUT
+map set to data/maps/smallMaps.sqlite3
+ERROR:
+END

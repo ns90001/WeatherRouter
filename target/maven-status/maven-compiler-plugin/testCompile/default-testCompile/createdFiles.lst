@@ -1,0 +1,10 @@
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/maps/WaysTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/stars/StarsTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/routeCreator/routeCreatorTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/weather/WeatherDataTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/maps/MapTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/stars/KDTreeTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/weather/WeatherDataStorageTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/maps/RouteTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/maps/NearestTest.class
+edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/main/maps/AStarTest.class

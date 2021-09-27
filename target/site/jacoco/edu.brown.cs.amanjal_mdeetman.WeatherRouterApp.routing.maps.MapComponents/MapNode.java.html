@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents</a> &gt; <span class="el_source">MapNode.java</span></div><h1>MapNode.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDPoint;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.MapCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedNode;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Node class containing info on each node from database.
+ */
+public class MapNode extends DirectedNode&lt;MapNode, Way&gt; implements KDPoint  {
+  private final double latitude;
+  private final double longitude;
+  private final double[] coords;
+  private final String id;
+  private final MapCmd mapCmd;
+  private final Connection conn;
+  private Set&lt;Way&gt; outgoing;
+<span class="fc" id="L27">  private double residentialSpeed = 20;</span>
+<span class="fc" id="L28">  private double primarySpeed = 55;</span>
+<span class="fc" id="L29">  private double secondarySpeed = 40;</span>
+<span class="fc" id="L30">  private double motorwaySpeed = 200;</span>
+<span class="fc" id="L31">  private double serviceSpeed = 40;</span>
+<span class="fc" id="L32">  private double motorway_linkSpeed = 100;</span>
+<span class="fc" id="L33">  private double weatherHeuristic = 0;</span>
+  /**
+   * Constructor for MapNode which initializes instance variables.
+   * @param lat latitude of this node
+   * @param lon longitude of this node
+   * @param nodeId id of this node (including /n/)
+   * @param map MapCmd object which has the database connection
+   */
+<span class="fc" id="L41">  public MapNode(double lat, double lon, String nodeId, MapCmd map) {</span>
+<span class="fc" id="L42">    latitude = lat;</span>
+<span class="fc" id="L43">    longitude = lon;</span>
+<span class="fc" id="L44">    coords = new double[]{lat, lon};</span>
+<span class="fc" id="L45">    id = nodeId;</span>
+<span class="fc" id="L46">    mapCmd = map;</span>
+<span class="fc" id="L47">    conn = map.getDatabaseConn();</span>
+<span class="fc" id="L48">    outgoing = null;</span>
+<span class="fc" id="L49">  }</span>
+
+  /**
+   * Method returns Latitude of Node.
+   * @return - double latitude
+   */
+  public double getLatitude() {
+<span class="fc" id="L56">    return latitude;</span>
+  }
+
+  /**
+   * Method returns Longitude of Node.
+   * @return - double longitude
+   */
+  public double getLongitude() {
+<span class="fc" id="L64">    return longitude;</span>
+  }
+
+  /**
+   * Method returns the coordinates of Node.
+   * @return - double array of coordinates.
+   */
+  @Override
+  public double[] getCoords() {
+<span class="fc" id="L73">    return coords;</span>
+  }
+
+  /**
+   * Method returns distance from Node to point passed in.
+   * @param point another KDPoint
+   * @return - double distance
+   */
+  @Override
+  public double getDist(KDPoint point) {
+<span class="nc" id="L83">    double[] compCoords = point.getCoords();</span>
+<span class="nc" id="L84">    return calcDist(compCoords);</span>
+  }
+
+  /**
+   * Method returns distance to coordinates passed in.
+   * @param coordinates - double distance.
+   * @return
+   */
+  @Override
+  public double getDist(double[] coordinates) {
+<span class="fc" id="L94">    return calcDist(coordinates);</span>
+  }
+
+  /**
+   * Method returns id of node (always 0).
+   * @return - 0
+   */
+  @Override
+  public int getId() {
+<span class="fc" id="L103">    return 0;</span>
+  }
+
+  /**
+   * Gets all the ways for which this node is the start.
+   * @return a set of all outgoing ways. Returns null on error.
+   * @param edgeList
+   */
+  @Override
+  public Set&lt;Way&gt; getOutgoingEdges(List&lt;Way&gt; edgeList) {
+
+    //if this method has not been called yet
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    if (outgoing == null) {</span>
+<span class="fc" id="L116">      outgoing = new HashSet&lt;&gt;();</span>
+      try {
+        //queries the database for ways where this node is the start
+<span class="fc" id="L119">        PreparedStatement prep = conn.prepareStatement(</span>
+          &quot;SELECT way.id, way.type, way.end\n&quot;
+            + &quot;FROM way\n&quot;
+            + &quot;WHERE way.start = ?&quot;);
+<span class="fc" id="L123">        prep.setString(1, this.toString());</span>
+<span class="fc" id="L124">        ResultSet rs = prep.executeQuery();</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (!rs.isClosed()) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">          while (rs.next()) {</span>
+<span class="fc" id="L127">            double traversable = 0;</span>
+<span class="fc" id="L128">            String type = rs.getString(2);</span>
+<span class="fc bfc" id="L129" title="All 4 branches covered.">            if (type.equals(&quot;&quot;) || type.equals(&quot;unclassified&quot;)) {</span>
+<span class="fc" id="L130">              traversable = 0;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">            } else if (type.equals(&quot;track&quot;)) {</span>
+<span class="nc" id="L132">              traversable = 10;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            } else if (type.equals(&quot;service&quot;)) {</span>
+<span class="fc" id="L134">              traversable = serviceSpeed;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            } else if (type.equals(&quot;secondary&quot;)) {</span>
+<span class="fc" id="L136">              traversable = secondarySpeed;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            } else if (type.equals (&quot;residential&quot;)) {</span>
+<span class="fc" id="L138">              traversable = residentialSpeed;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            } else if (type.equals (&quot;primary&quot;)) {</span>
+<span class="fc" id="L140">              traversable = primarySpeed;</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">            } else if (type.equals(&quot;path&quot;)) {</span>
+<span class="nc" id="L142">              traversable = 5;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            } else if (type.equals(&quot;motorway_link&quot;)) {</span>
+<span class="fc" id="L144">              traversable = motorway_linkSpeed;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            } else if (type.equals(&quot;motorway&quot;)) {</span>
+<span class="fc" id="L146">              traversable = motorwaySpeed;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            } else if (type.equals(&quot;footway&quot;)) {</span>
+<span class="fc" id="L148">              traversable = 10;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            } else if (type.equals(&quot;cycleway&quot;)) {</span>
+<span class="fc" id="L150">              traversable = 5;</span>
+            } else {
+<span class="fc" id="L152">              traversable = 0;</span>
+            }
+<span class="fc" id="L154">            String endNode = rs.getString(3);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">              if(mapCmd.getNode(endNode) != null) {</span>
+<span class="fc" id="L156">                Way thisWay = new Way(this, mapCmd.getNode(endNode), rs.getString(1), traversable);</span>
+<span class="fc" id="L157">                outgoing.add(thisWay);</span>
+              }
+<span class="fc" id="L159">          }</span>
+        }
+<span class="fc" id="L161">        prep.close();</span>
+<span class="fc" id="L162">        rs.close();</span>
+<span class="nc" id="L163">      } catch (SQLException e) {</span>
+<span class="nc" id="L164">        System.out.println(&quot;null&quot;);</span>
+<span class="nc" id="L165">        return null;</span>
+<span class="fc" id="L166">      }</span>
+    }
+<span class="fc" id="L168">    return this.outgoing;</span>
+  }
+
+  /**
+   * Method to set the outgoing edges of the MapNode.
+   * @param outgoin - a Set of Ways
+   */
+  public void setOutgoingEdges(Set&lt;Way&gt; outgoin) {
+<span class="nc" id="L176">    this.outgoing = outgoin;</span>
+<span class="nc" id="L177">  }</span>
+
+  /**
+   * To string method for the node.
+   * @return the id of the node.
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L185">    return this.id;</span>
+  }
+  /**
+   * Calculates the distance between the MapNode and the specified coordinates.
+   * @param compCoords destination coords, the distance to which will be found.
+   * @return the square of the distance.
+   */
+  private double calcDist(double[] compCoords) {
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">    if (compCoords.length != coords.length) {</span>
+<span class="nc" id="L194">      return -1;</span>
+    }
+<span class="fc" id="L196">    double dist = 0;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">    for (int i = 0; i &lt; coords.length; i++) {</span>
+<span class="fc" id="L198">      double diff = coords[i] - compCoords[i];</span>
+<span class="fc" id="L199">      dist += diff * diff;</span>
+    }
+    //square of the distance returned to reduce computations.
+<span class="fc" id="L202">    return dist;</span>
+  }
+
+  public String getNodeId() {
+<span class="nc" id="L206">    return id;</span>
+  }
+
+  @Override
+  public void setWeatherHeuristic(double weatherHeuristic) {
+<span class="nc" id="L211">    this.weatherHeuristic = weatherHeuristic;</span>
+<span class="nc" id="L212">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

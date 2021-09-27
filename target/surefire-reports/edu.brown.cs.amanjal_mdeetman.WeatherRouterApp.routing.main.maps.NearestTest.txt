@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.NearestTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 4.911 s <<< FAILURE! - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.NearestTest
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.NearestTest.bigMapNearestTest  Time elapsed: 4.903 s  <<< FAILURE!
+org.junit.ComparisonFailure: expected:</n/4[015.7374.527767659]> but was:</n/4[130.7185.201622857]>
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.NearestTest.bigMapNearestTest(NearestTest.java:81)
+

@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.RouteTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.035 s <<< FAILURE! - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.RouteTest
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.RouteTest.outputPathTest  Time elapsed: 0.006 s  <<< ERROR!
+java.lang.NullPointerException
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.RouteTest.outputPathTest(RouteTest.java:92)
+

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeatherData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather</a> &gt; <span class="el_source">WeatherData.java</span></div><h1>WeatherData.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+
+public class WeatherData {
+  private WeatherDataStorage ref;
+  private HashMap&lt;JSONArray, WeatherObject&gt; cache;
+<span class="fc" id="L19">  public WeatherData() {</span>
+<span class="fc" id="L20">   ref = new WeatherDataStorage();</span>
+<span class="fc" id="L21">   cache = new HashMap&lt;JSONArray, WeatherObject&gt;();</span>
+<span class="fc" id="L22">  }</span>
+
+  public WeatherObject createData(MapNode start, MapNode end, String time) throws Exception {
+    //given nodes from a way - the weatherObj will be set as attribute to way
+    //need to find a better way of doing this
+    //DecimalFormat df = new DecimalFormat(&quot;##.####&quot;);
+<span class="fc" id="L28">    double lat = ((start.getLatitude() + end.getLatitude())/2);</span>
+<span class="fc" id="L29">    double lon = ((start.getLongitude() + end.getLongitude())/2);</span>
+    //lat = Double.parseDouble(df.format(lat));
+    //lon = Double.parseDouble(df.format(lon));
+    //time format thus far should be : &quot;2021-04-06T16:00:00-04:00&quot;
+    //giving a data followed by the hour as &quot;T(hour of day of military time)-(normal time)
+<span class="fc" id="L34">    String wTime = time;</span>
+    WeatherObject wObj;
+<span class="fc" id="L36">    JSONArray wData = null;</span>
+    try {
+<span class="fc" id="L38">      wData = ref.hourlyForecastRequest(lat, lon);</span>
+<span class="nc" id="L39">    } catch (IOException e) {</span>
+<span class="nc" id="L40">      e.printStackTrace();</span>
+<span class="fc" id="L41">    }</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">    if (cache.containsKey(wData)) {</span>
+<span class="fc" id="L43">      return cache.get(wData);</span>
+    }
+<span class="fc" id="L45">    int count = wData.length();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    for(int i=0 ; i&lt; count; i++){</span>
+<span class="fc" id="L47">      JSONObject hourlyData = wData.getJSONObject(i);</span>
+
+<span class="fc" id="L49">      ZonedDateTime formattedStartTime = ZonedDateTime.parse(hourlyData.getString(&quot;startTime&quot;),</span>
+<span class="fc" id="L50">          DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of(&quot;UTC-04:00&quot;)));</span>
+<span class="fc" id="L51">      ZonedDateTime formattedTime = ZonedDateTime.parse(wTime,</span>
+<span class="fc" id="L52">          DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of(&quot;UTC-04:00&quot;)));</span>
+
+<span class="fc" id="L54">      if (</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">          (formattedTime.getHour() == formattedStartTime.getHour())</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">      &amp;&amp; formattedTime.getDayOfYear() == formattedStartTime.getDayOfYear()) {</span>
+        int temp;
+        String windSpeed;
+        String shortForecast;
+        boolean isDayTime;
+        String icon;
+<span class="fc" id="L62">        temp = Integer.parseInt(hourlyData.getString(&quot;temperature&quot;));</span>
+<span class="fc" id="L63">        windSpeed = hourlyData.getString(&quot;windSpeed&quot;);</span>
+<span class="fc" id="L64">        icon = hourlyData.getString(&quot;icon&quot;);</span>
+<span class="fc" id="L65">        shortForecast = hourlyData.getString(&quot;shortForecast&quot;);</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (hourlyData.getString(&quot;isDaytime&quot;).equals(&quot;true&quot;)) {</span>
+<span class="nc" id="L67">          isDayTime = true;</span>
+        } else {
+<span class="fc" id="L69">          isDayTime = false;</span>
+        }
+<span class="fc" id="L71">        wObj = new WeatherObject(temp, windSpeed, shortForecast, isDayTime);</span>
+<span class="fc" id="L72">        cache.put(wData, wObj);</span>
+<span class="fc" id="L73">        return wObj;</span>
+      }
+    }
+<span class="fc" id="L76">    throw new Exception(&quot;wObj not found or created&quot;);</span>
+  }
+
+  public static double createHeuristic(WeatherObject wObj) throws Exception {
+<span class="fc" id="L80">    WeatherData ref = new WeatherData();</span>
+<span class="fc" id="L81">    int windSpeed = ref.getSpeed(wObj.getWindSpeed());</span>
+<span class="fc" id="L82">    double heuristic = 0;</span>
+<span class="fc" id="L83">    String[] forecast = wObj.getForecast().split(&quot; &quot;);</span>
+    //create a weather heuristic based on the given weatherObj
+    //attributes have specified values
+    //ie: if it is night then 5 points are added to the heuristic
+<span class="fc bfc" id="L87" title="All 2 branches covered.">    if (wObj.isDayTime() == false) {</span>
+<span class="fc" id="L88">      heuristic += Constants.nightInc;</span>
+    }
+<span class="pc bpc" id="L90" title="1 of 4 branches missed.">    if (windSpeed &lt; 15 &amp;&amp; windSpeed != 0) {</span>
+<span class="fc" id="L91">      heuristic += Constants.lowWindSpeedInc;</span>
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">    } else if (windSpeed &gt;= 15 &amp;&amp; windSpeed &lt; 30) {</span>
+<span class="nc" id="L93">      heuristic += Constants.medWindSpeedInc;</span>
+<span class="pc bpc" id="L94" title="2 of 4 branches missed.">    } else if (windSpeed &gt;= 30 &amp;&amp; windSpeed &lt; 60) {</span>
+<span class="fc" id="L95">      heuristic += Constants.highWindSpeedInc;</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    } else if (windSpeed &gt;= 60) {</span>
+<span class="nc" id="L97">      heuristic += Constants.dangerousWindSpeedInc;</span>
+    } else {
+<span class="nc" id="L99">      throw new Exception(&quot;windSpeed could not be categorized properly&quot;);</span>
+    }
+<span class="fc bfc" id="L101" title="All 4 branches covered.">    if (wObj.getTemp() &lt;= 32 || wObj.getTemp() &gt;= 100) {</span>
+<span class="fc" id="L102">      heuristic += Constants.tempInc;</span>
+    }
+    //need a better system
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    for (String s: forecast) {</span>
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">      if (s.equalsIgnoreCase(&quot;showers&quot;) || s.equalsIgnoreCase(&quot;rain&quot;)) {</span>
+<span class="fc" id="L107">        heuristic += Constants.showersInc;</span>
+      }
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">      if (s.equalsIgnoreCase(&quot;snow&quot;)) {</span>
+<span class="nc" id="L110">        heuristic += Constants.snowInc;</span>
+      }
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">      if (s.equalsIgnoreCase(&quot;hail&quot;)) {</span>
+<span class="nc" id="L113">        heuristic += Constants.hailInc;</span>
+      }
+<span class="fc bfc" id="L115" title="All 2 branches covered.">      if (s.equalsIgnoreCase(&quot;thunderstorms&quot;)) {</span>
+<span class="fc" id="L116">        heuristic += Constants.thunderstormsInc;</span>
+      }
+    }
+<span class="fc" id="L119">    return heuristic;</span>
+  }
+
+  public static int getSpeed(String windSpeed) throws Exception {
+<span class="fc" id="L123">    String[] string = windSpeed.split(&quot; &quot;);// \s regex not working</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">    if (string.length &lt;= 1) {</span>
+<span class="fc" id="L125">      throw new Exception(&quot;&quot;);</span>
+    }
+<span class="fc" id="L127">    int speed = Integer.parseInt(string[0]);</span>
+<span class="fc" id="L128">    return speed;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

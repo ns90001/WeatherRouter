@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectedNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra</a> &gt; <span class="el_source">DirectedNode.java</span></div><h1>DirectedNode.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Abstract class representing a node in a graph with the
+ * information necessary to perform algorithms like Dijsktra's.
+ * @param &lt;N&gt; generic type representing the node
+ * @param &lt;E&gt; generic type representing the edge
+ */
+<span class="fc" id="L14">public abstract class DirectedNode&lt;N, E&gt; {</span>
+<span class="fc" id="L15">  private N prevNode = null;</span>
+<span class="fc" id="L16">  private E prevEdge = null;</span>
+<span class="fc" id="L17">  private double distance = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L18">  private double heuristic = 0;</span>
+<span class="fc" id="L19">  private double weatherHeuristic = 0;</span>
+  private String nodeId;
+
+  /**
+   * Sets the distance.
+   * @param distance double representing distance
+   */
+  public void setDistance(double distance) {
+<span class="fc" id="L27">    this.distance = distance;</span>
+<span class="fc" id="L28">  }</span>
+
+  /**
+   * Gets the distance.
+   * @return double representing distance
+   */
+  public double getDistance() {
+<span class="fc" id="L35">    return this.distance;</span>
+  }
+
+  /**
+   * Set the heuristic distance.
+   * @param dist - double representing heuristic distance
+   */
+  public void setHeuristic(double dist) {
+<span class="fc" id="L43">    this.heuristic = dist;</span>
+<span class="fc" id="L44">  }</span>
+
+  /**
+   * Set the heuristic distance.
+   * @return - double representing heuristic distance
+   */
+  public double getHeuristic() {
+<span class="fc" id="L51">    return this.heuristic;</span>
+  }
+  /**
+   * Sets the previous node in the path.
+   * @param node the previous node
+   */
+  public void setPrevNode(N node) {
+<span class="fc" id="L58">    this.prevNode = node;</span>
+<span class="fc" id="L59">  }</span>
+
+  /**
+   * Gets the previous node in the path.
+   * @return the previous node
+   */
+  public N getPrevNode() {
+<span class="fc" id="L66">    return this.prevNode;</span>
+  }
+
+  /**
+   * Sets the previous edge in the path.
+   * @param edge the previous edge
+   */
+  public void setPrevEdge(E edge) {
+<span class="fc" id="L74">    this.prevEdge = edge;</span>
+<span class="fc" id="L75">  }</span>
+
+  /**
+   * Gets the previous edge in the path.
+   * @return the previous edge
+   */
+  public E getPrevEdge() {
+<span class="fc" id="L82">    return this.prevEdge;</span>
+  }
+
+  /**
+   * Gets a set of all the outgoing edges from this node in the graph.
+   * @return set of outgoing edges
+   * @param edgeList
+   */
+  public abstract Set&lt;E&gt; getOutgoingEdges(List&lt;Way&gt; edgeList);
+
+  public String getNodeId() {
+<span class="nc" id="L93">    return nodeId;</span>
+  }
+
+  public abstract void setWeatherHeuristic(double weatherHeuristic);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

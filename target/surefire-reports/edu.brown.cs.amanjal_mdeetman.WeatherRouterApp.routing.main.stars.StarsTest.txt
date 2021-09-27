@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.017 s <<< FAILURE! - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.starsTest  Time elapsed: 0.007 s  <<< FAILURE!
+org.junit.ComparisonFailure: expected:<[Read 10 stars from data/stars/ten-star.csv]> but was:<[ERROR: data/stars/ten-star.csv not found]>
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.starsTest(StarsTest.java:191)
+
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.starsEdgeTest  Time elapsed: 0.001 s  <<< FAILURE!
+org.junit.ComparisonFailure: expected:<[Read 0 stars from data/stars_test/no-star.csv]> but was:<[ERROR: data/stars_test/no-star.csv not found]>
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.starsEdgeTest(StarsTest.java:207)
+
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.mockTest  Time elapsed: 0.001 s  <<< FAILURE!
+org.junit.ComparisonFailure: 
+expected:<[Name: Othelia Wonfar,Email: owonfar0@hibu.com,Gender: Genderqueer,Address: 63 Service Junction
+Name: Bethany,Date: 9/30/2020,Email: bhogsden1@cargocollective.com,Gender: Male
+Name: Rhys Donnersberg,Email: rdonnersberg2@smh.com.au,Address: 98963 New Castle Center]> but was:<[ERROR: csv should have header "StarID,ProperName,X,Y,Z"]>
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.stars.StarsTest.mockTest(StarsTest.java:243)
+

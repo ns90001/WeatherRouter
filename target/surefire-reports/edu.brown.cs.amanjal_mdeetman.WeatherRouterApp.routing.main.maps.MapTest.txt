@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.MapTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 4.73 s <<< FAILURE! - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.MapTest
+edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.MapTest.largeDbTest  Time elapsed: 4.716 s  <<< FAILURE!
+java.lang.AssertionError
+	at edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.maps.MapTest.largeDbTest(MapTest.java:58)
+

@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>maps - Checkstyle report</title>
+    <link>${project.url}</link>
+    <description>maps - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2021</copyright>
+    <item>
+      <title>File: 34,
+             Errors: 176,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>${project.url}/checkstyle.html</link>
+      <description>
+        <p>Click <a href="${project.url}/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.Constants.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/Constants.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/MapComponents/Way.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.StarXComparator.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/StarXComparator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.NeighborsCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NeighborsCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherDataStorage.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherDataStorage.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDPoint.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/kdtree/KDPoint.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNodeXComparator.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/MapComponents/MapNodeXComparator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.NearestCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/NearestCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/DirectedEdge.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.modelling.MockPerson.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/modelling/MockPerson.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.Dijkstra.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/Dijkstra.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.MockCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/MockCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.WaysCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/WaysCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.RouteCreator.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/RouteCreator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.csv.CSVParser.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/parsing/csv/CSVParser.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.Main.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/Main.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.NaiveRadiusCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NaiveRadiusCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/MapComponents/MapNode.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.MapCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/MapCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.MultiTreeMap.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/kdtree/MultiTreeMap.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache.Cache.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/Cache/Cache.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.Star.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/Star.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.RadiusCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/RadiusCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.RouteCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/RouteCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.NaiveNeighborsCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/NaiveNeighborsCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDNode.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/kdtree/KDNode.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.NodeComparator.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/NodeComparator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherData.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedNode.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/DirectedNode.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.REPL.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/parsing/input/REPL.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDTree.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/kdtree/KDTree.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/parsing/input/ICallable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands.StarsCmd.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/stars/commands/StarsCmd.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherObject.java">edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherObject.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

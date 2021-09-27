@@ -1,0 +1,7 @@
+INPUT
+mock data/mock_test/mock-sample.csv
+OUTPUT
+Name: Othelia Wonfar,Email: owonfar0@hibu.com,Gender: Genderqueer,Address: 63 Service Junction
+Name: Bethany,Date: 9/30/2020,Email: bhogsden1@cargocollective.com,Gender: Male
+Name: Rhys Donnersberg,Email: rdonnersberg2@smh.com.au,Address: 98963 New Castle Center
+END

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NodeComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra</a> &gt; <span class="el_source">NodeComparator.java</span></div><h1>NodeComparator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra;
+
+import java.util.Comparator;
+
+/**
+ * Comparator used to compare two DirectedNodes.
+ * @param &lt;N&gt; - Node
+ * @param &lt;E&gt; - Edge of Node
+ */
+public class NodeComparator&lt;N, E&gt; implements Comparator&lt;DirectedNode&lt;N, E&gt;&gt; {
+  private boolean estimator;
+
+  /**
+   * Empty constructor for GraphNodeComparator.
+   */
+<span class="fc" id="L16">  public NodeComparator() { }</span>
+
+  /**
+   * Compares nodes by distance.
+   * @param node1 first node which you want to compare.
+   * @param node2 second node which you want to compare.
+   * @return returns 1 if dist of first is bigger than second, 0 if they are equal,
+   * and -1 otherwise.
+   */
+  @Override
+  public int compare(DirectedNode node1, DirectedNode node2) {
+<span class="fc" id="L27">    int output = Double.compare(node1.getDistance(), node2.getDistance());</span>
+<span class="pc bpc" id="L28" title="1 of 4 branches missed.">    if (output == 0 &amp;&amp; estimator) {</span>
+<span class="fc" id="L29">      output = Double.compare(node1.getHeuristic(), node2.getHeuristic());</span>
+    }
+<span class="fc" id="L31">    return output;</span>
+  }
+
+  /**
+   * Method to see if we should check the estimator (A* portion of comparing).
+   * @param b - a boolean
+   */
+  public void setEstimator(boolean b) {
+<span class="fc" id="L39">    estimator = b;</span>
+<span class="fc" id="L40">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

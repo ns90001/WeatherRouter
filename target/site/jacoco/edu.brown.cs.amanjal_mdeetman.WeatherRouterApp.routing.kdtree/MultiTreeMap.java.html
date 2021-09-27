@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiTreeMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree</a> &gt; <span class="el_source">MultiTreeMap.java</span></div><h1>MultiTreeMap.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+/**
+ * Map which sorts by key and can have multiple values associated with each key.
+ * @param &lt;K&gt; Type of the key
+ * @param &lt;V&gt; Type of the value
+ */
+public class MultiTreeMap&lt;K, V&gt; extends TreeMap&lt;K, List&lt;V&gt;&gt; {
+  private int size;
+
+  /**
+   * Constructor for MultiTreeMap. Initializes instance variables.
+   */
+<span class="fc" id="L18">  public MultiTreeMap() {</span>
+<span class="fc" id="L19">    size = 0;</span>
+<span class="fc" id="L20">  }</span>
+
+  /**
+   * Adds an entry to the map.
+   * @param key key associated with entry
+   * @param value value associated with entry
+   */
+  public void add(K key, V value) {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    if (super.get(key) == null) {</span>
+<span class="fc" id="L29">      List&lt;V&gt; valueList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">      valueList.add(value);</span>
+<span class="fc" id="L31">      super.put(key, valueList);</span>
+<span class="fc" id="L32">    } else {</span>
+<span class="fc" id="L33">      super.get(key).add(value);</span>
+    }
+<span class="fc" id="L35">    size++;</span>
+<span class="fc" id="L36">  }</span>
+
+  /**
+   * Gives the size of the map.
+   *
+   * @return number of values in the map
+   */
+  @Override
+  public int size() {
+<span class="fc" id="L45">    return size;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

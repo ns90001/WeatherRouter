@@ -1,0 +1,13 @@
+INPUT
+stars data/stars/three-star.csv
+naive_neighbors 4 0 0 0
+neighbors 100 0 0 0
+OUTPUT
+Read 3 stars from data/stars/three-star.csv
+1
+2
+3
+1
+2
+3
+END

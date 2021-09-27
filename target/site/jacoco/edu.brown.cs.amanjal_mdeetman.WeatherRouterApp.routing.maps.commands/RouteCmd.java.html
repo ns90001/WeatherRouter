@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RouteCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands</a> &gt; <span class="el_source">RouteCmd.java</span></div><h1>RouteCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache.Cache;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.Dijkstra;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * RouteCmd class which handles the route user command.
+ */
+public class RouteCmd implements ICallable {
+  private final MapCmd mapCmd;
+<span class="fc" id="L22">  private List&lt;List&lt;Double&gt;&gt; returnList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L23">  private List&lt;Way&gt; wayList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L24">  private List&lt;Way&gt; firstRouteList = new ArrayList&lt;&gt;();</span>
+  private Cache&lt;List&lt;String&gt;, String&gt; cacheMap;
+
+  /**
+   * Constructor for RouteCmd which initializes instance variables.
+   *
+   * @param map the MapCmd instance being used which stores the database connection
+   *            as well as a hash map of nodes.
+   */
+<span class="fc" id="L33">  public RouteCmd(MapCmd map) {</span>
+<span class="fc" id="L34">    mapCmd = map;</span>
+<span class="fc" id="L35">    cacheMap = new Cache&lt;List&lt;String&gt;, String&gt;();</span>
+<span class="fc" id="L36">    cacheMap.build();</span>
+<span class="fc" id="L37">  }</span>
+
+  /**
+   * Execute method for the RouteCmd command.
+   *
+   * @param tokens arguments for the command, not including the command name
+   * @return the string to be outputted to the user. Either an error message or
+   * the path between the specified nodes.
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">    if (tokens.size() != 4) {</span>
+<span class="fc" id="L49">      return &quot;ERROR: route command should have 4 arguments&quot;;</span>
+    }
+//    if (cacheMap.hasKey(tokens)) {
+//      return cacheMap.returnValue(tokens);
+//    }
+<span class="fc" id="L54">    Dijkstra&lt;MapNode, Way&gt; dijkstra = new Dijkstra&lt;&gt;();</span>
+    MapNode start;
+    MapNode end;
+    //checks if street names are given rather than coordinates
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    if (tokens.get(0).contains(&quot;\&quot;&quot;)) {</span>
+      // for loop to make sure all args are street names
+<span class="fc bfc" id="L60" title="All 2 branches covered.">      for (int i = 1; i &lt; tokens.size(); i++) {</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (!tokens.get(i).contains(&quot;\&quot;&quot;)) {</span>
+<span class="nc" id="L62">          return &quot;ERROR: Invalid Inputs&quot;;</span>
+        }
+      }
+      //will contain the start and end node
+<span class="fc" id="L66">      MapNode[] nodes = new MapNode[2];</span>
+<span class="fc" id="L67">      Connection conn = mapCmd.getDatabaseConn();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">      for (int i = 0; i &lt; 2; i++) {</span>
+        try {
+          //queries the database for a list of nodes which appear in both named ways
+<span class="fc" id="L71">          PreparedStatement prep = conn.prepareStatement(&quot;SELECT intersection\n&quot;</span>
+            + &quot;FROM (SELECT *,\n&quot;
+            + &quot;CASE WHEN way1.start = way2.start THEN way1.start\n&quot;
+            + &quot;\t WHEN way1.end = way2.end THEN way1.end\n&quot;
+            + &quot;\t WHEN way1.start = way2.end THEN way1.start\n&quot;
+            + &quot;\t WHEN way1.end = way2.start THEN way1.end\n&quot;
+            + &quot;\t ELSE NULL END AS intersection\n&quot;
+            + &quot;FROM way as way1, way as way2\n&quot;
+            + &quot;WHERE way1.name = ? AND way2.name = ?\n&quot;
+            + &quot;GROUP BY intersection)&quot;);
+          //sets the names of the ways which will be queried to be the user's arguments
+<span class="fc" id="L82">          String way1 = tokens.get(2 * i);</span>
+<span class="fc" id="L83">          String way2 = tokens.get((2 * i) + 1);</span>
+<span class="fc" id="L84">          prep.setString(1, way1.substring(1, way1.length() - 1));</span>
+<span class="fc" id="L85">          prep.setString(2, way2.substring(1, way2.length() - 1));</span>
+<span class="fc" id="L86">          ResultSet rs = prep.executeQuery();</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">          if (!rs.isClosed()) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            if (rs.next()) {</span>
+<span class="fc" id="L89">              nodes[i] = mapCmd.getNode(rs.getString(1));</span>
+            } else {
+<span class="nc" id="L91">              prep.close();</span>
+<span class="nc" id="L92">              rs.close();</span>
+<span class="nc" id="L93">              return &quot;ERROR: no valid intersection found&quot;;</span>
+            }
+          }
+<span class="fc" id="L96">          prep.close();</span>
+<span class="fc" id="L97">          rs.close();</span>
+<span class="nc" id="L98">        } catch (SQLException e) {</span>
+<span class="nc" id="L99">          return &quot;ERROR: could not query database&quot;;</span>
+<span class="fc" id="L100">        }</span>
+      }
+<span class="fc" id="L102">      start = nodes[0];</span>
+<span class="fc" id="L103">      end = nodes[1];</span>
+<span class="fc" id="L104">    } else {</span>
+      // for loop to make sure all other arguments are numbers not street names
+<span class="fc bfc" id="L106" title="All 2 branches covered.">      for (int i = 1; i &lt; tokens.size(); i++) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if (tokens.get(i).contains(&quot;\&quot;&quot;)) {</span>
+<span class="nc" id="L108">          return &quot;ERROR: Invalid Inputs&quot;;</span>
+        }
+      }
+      //finds the node closest to the specified coordinates using the NearestCmd class
+<span class="fc" id="L112">      NearestCmd nearestCmd = new NearestCmd(mapCmd);</span>
+<span class="fc" id="L113">      List&lt;String&gt; startArgs = new ArrayList&lt;&gt;(tokens.subList(0, 2));</span>
+<span class="fc" id="L114">      nearestCmd.run(startArgs);</span>
+<span class="fc" id="L115">      start = nearestCmd.getNearNode();</span>
+<span class="fc" id="L116">      List&lt;String&gt; endArgs = new ArrayList&lt;&gt;(tokens.subList(2, 4));</span>
+<span class="fc" id="L117">      nearestCmd.run(endArgs);</span>
+<span class="fc" id="L118">      end = nearestCmd.getNearNode();</span>
+    }
+    // make sure nulls are not passed into dijsktra
+<span class="fc bfc" id="L121" title="All 2 branches covered.">    if (start == null) {</span>
+<span class="fc" id="L122">      return &quot;ERROR: Street 1 and Cross street 1 do not intersect&quot;;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">    } else if (end == null) {</span>
+<span class="fc" id="L124">      return &quot;ERROR: Street 2 and Cross street 2 do not intersect&quot;;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">    } else if (start == end) {</span>
+<span class="nc" id="L126">      return start.toString();</span>
+    }
+    //finds the shortest path between the start and end node
+    // wayList consist of allWays we need to be aware of
+<span class="fc" id="L130">    dijkstra.shortestPath(start, end, true, wayList);</span>
+<span class="fc" id="L131">    String output = outputPath(start, end);</span>
+<span class="fc" id="L132">    dijkstra.resetEdge();</span>
+    // rough size of string
+<span class="fc" id="L134">    int size = 4 * 2 * (int) ((((output.length()) * 2) + 6 * 5 + 3 * 5) / (4 * 2));</span>
+<span class="fc" id="L135">    cacheMap.setSizeOfVal(size);</span>
+<span class="fc" id="L136">    cacheMap.add(tokens, output); // add k,v pair to cacheMap</span>
+<span class="fc" id="L137">    return output;</span>
+  }
+
+  /**
+   * Method which, given a start and end node which has been put through Dijkstra's algorithm,
+   * will produce a string representing the path between these nodes.
+   *
+   * @param start start node
+   * @param end   end node
+   * @return path between the nodes if one exists. If not, -/- will be outputted to indicate no path
+   */
+  public String outputPath(MapNode start, MapNode end) {
+<span class="fc" id="L149">    List&lt;String&gt; outList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L150">    String noPath = start.toString() + &quot; -/- &quot; + end.toString();</span>
+    //occurs if only path is through an non-traversable way
+<span class="fc bfc" id="L152" title="All 2 branches covered.">    if (end.getDistance() == Double.POSITIVE_INFINITY) {</span>
+<span class="fc" id="L153">      return noPath;</span>
+    }
+<span class="fc" id="L155">    MapNode curr = end;</span>
+<span class="fc" id="L156">    List&lt;Double&gt; preList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L157">    preList.add(end.getCoords()[0]);</span>
+<span class="fc" id="L158">    preList.add(end.getCoords()[1]);</span>
+<span class="fc" id="L159">    returnList.add(preList);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">    while (curr != start) {</span>
+<span class="fc" id="L161">      MapNode prev = curr.getPrevNode();</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">      if (prev != null) {</span>
+<span class="fc" id="L163">        List&lt;Double&gt; loopList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L164">        loopList.add(prev.getCoords()[0]);</span>
+<span class="fc" id="L165">        loopList.add(prev.getCoords()[1]);</span>
+<span class="fc" id="L166">        returnList.add(loopList);</span>
+      }
+      //if prev is null but the start node has not been found, then there must be no valid path
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">      if (prev == null) {</span>
+<span class="nc" id="L170">        return noPath;</span>
+      }
+<span class="fc" id="L172">      outList.add(prev.toString() + &quot; -&gt; &quot; + curr.toString() + &quot; : &quot;</span>
+<span class="fc" id="L173">        + curr.getPrevEdge().toString());</span>
+<span class="fc" id="L174">      firstRouteList.add(0, curr.getPrevEdge()); // add edge to beginning of firstRouteList</span>
+<span class="fc" id="L175">      curr = prev;</span>
+<span class="fc" id="L176">    }</span>
+<span class="fc" id="L177">    StringBuilder out = new StringBuilder();</span>
+    //iterates through list backwards
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    for (int i = outList.size() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L180">      out.append(outList.get(i));</span>
+<span class="fc" id="L181">      out.append('\n');</span>
+    }
+
+<span class="fc" id="L184">    return out.substring(0, out.length() - 1);</span>
+  }
+
+  /**
+   * set the wayList that is passed into Dijsktras to the inputted data
+   * @param newWayList - list of ways
+   */
+  public void setWays(List&lt;Way&gt; newWayList) {
+<span class="fc" id="L192">    wayList = newWayList;</span>
+<span class="fc" id="L193">  }</span>
+
+  /**
+   * Get the ways that make up the route
+   * @return - list of ways
+   */
+  public List&lt;Way&gt; getFirstRouteList() {
+<span class="fc" id="L200">    return firstRouteList;</span>
+  }
+
+  /**
+   * Method used to clear the firstRouteList from RouteCreator
+   * @param newWayList - list of ways
+   */
+  public void setFirstRouteList(List&lt;Way&gt; newWayList) {
+<span class="fc" id="L208">    firstRouteList = newWayList;</span>
+<span class="fc" id="L209">  }</span>
+
+  /**
+   * Method used to see whether we need to look for weather data in routeCreator
+   * @param bool -- boolean
+   */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

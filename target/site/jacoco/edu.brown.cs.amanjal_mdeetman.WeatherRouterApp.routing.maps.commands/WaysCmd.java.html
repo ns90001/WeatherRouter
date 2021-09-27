@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WaysCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands</a> &gt; <span class="el_source">WaysCmd.java</span></div><h1>WaysCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache.Cache;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * Class for the WayCmd which is used to find all the ways inside a bounding box.
+ */
+public class WaysCmd implements ICallable {
+  private final MapCmd mapCmd;
+<span class="fc" id="L22">  private List&lt;String&gt; returnList = new ArrayList&lt;&gt;();</span>
+  private Cache&lt;String, String&gt; cacheMap;
+<span class="fc" id="L24">  private HashMap&lt;String, List&lt;String&gt;&gt; wayToNode = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L25">  private List&lt;Way&gt; updatedList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L26">  private HashMap&lt;String, Boolean&gt; tempHash = new HashMap&lt;&gt;();</span>
+  private static final int SECONDLAST = 7;
+  private static final int LAST = 8;
+<span class="fc" id="L29">  private double residentialSpeed = 20;</span>
+<span class="fc" id="L30">  private double primarySpeed = 55;</span>
+<span class="fc" id="L31">  private double secondarySpeed = 40;</span>
+<span class="fc" id="L32">  private double motorwaySpeed = 200;</span>
+<span class="fc" id="L33">  private double serviceSpeed = 40;</span>
+<span class="fc" id="L34">  private double motorway_linkSpeed = 100;</span>
+
+  /**
+   * Constructor for WaysCmd, makes a new Cache and sets mapCmd.
+   * @param map - of type MapCmd.
+   */
+<span class="fc" id="L40">  public WaysCmd(MapCmd map) {</span>
+<span class="fc" id="L41">    mapCmd = map;</span>
+<span class="fc" id="L42">    cacheMap = new Cache&lt;String, String&gt;();</span>
+<span class="fc" id="L43">    cacheMap.build();</span>
+<span class="fc" id="L44">  }</span>
+
+  /**
+   * Method to execute WaysCmd. Takes in the argument and uses an SQL query to
+   * find all the ways inside a certain region.
+   * @param tokens arguments for the command, not including the command name
+   * @return - a string output
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    if (tokens.size() != 4) {</span>
+<span class="fc" id="L55">      return &quot;ERROR: ways command should have 4 arguments: &lt;lat1&gt; &lt;long1&gt; &lt;lat2&gt; &lt;long2&gt;&quot;;</span>
+    }
+    //stores the 4 latitude/longitude inputs from the user [lat1, long1, lat2, long2]
+<span class="fc" id="L58">    double[] box = new double[4];</span>
+    //stores the min and max latitude
+<span class="fc" id="L60">    double[] lat = new double[2];</span>
+    //stores the min and max longitude
+<span class="fc" id="L62">    double[] lon = new double[2];</span>
+<span class="fc" id="L63">    List&lt;String&gt; ways = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    for (int i = 0; i &lt; 4; i++) {</span>
+      try {
+<span class="fc" id="L66">        box[i] = Double.parseDouble(tokens.get(i));</span>
+<span class="fc" id="L67">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L68">        return &quot;ERROR: argument &quot; + (i + 1)</span>
+          + &quot; should be a number representing a latitude or longitude&quot;;
+<span class="fc" id="L70">      }</span>
+    }
+<span class="fc" id="L72">    lat[0] = Math.min(box[0], box[2]);</span>
+<span class="fc" id="L73">    lat[1] = Math.max(box[0], box[2]);</span>
+<span class="fc" id="L74">    lon[0] = Math.min(box[1], box[3]);</span>
+<span class="fc" id="L75">    lon[1] = Math.max(box[1], box[3]);</span>
+<span class="fc" id="L76">    Connection conn = mapCmd.getDatabaseConn();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (conn == null) {</span>
+<span class="fc" id="L78">      return &quot;ERROR: database is not yet set&quot;;</span>
+    }
+<span class="fc" id="L80">    String key = tokens.get(0) + &quot; &quot; + tokens.get(1) + &quot; &quot; + tokens.get(2) + &quot; &quot; + tokens.get(3);</span>
+//    if (cacheMap.hasKey(key)) { // if cache has key, use map to print
+//      return cacheMap.returnValue(key);
+//    }
+    try {
+
+      //gets the id of ways with a start or end node in the bounding box
+<span class="fc" id="L87">      PreparedStatement prep = conn.prepareStatement(&quot;SELECT * &quot;</span>
+          + &quot;FROM (SELECT way.id, n1.latitude as startlat, n1.longitude as startlong,&quot;
+          + &quot;n2.latitude as endlat, n2.longitude as endlong, way.type &quot;
+          + &quot;FROM way, node as n1, node as n2 &quot;
+          + &quot;WHERE way.start = n1.id and way.end = n2.id) &quot;
+          + &quot;WHERE (startlat BETWEEN ? AND ? &quot;
+          + &quot;AND startlong BETWEEN ? AND ?) &quot;
+          + &quot;OR (endlat BETWEEN ? AND ? &quot;
+          + &quot;AND endlong BETWEEN ? AND ?) &quot;
+          + &quot;ORDER BY id&quot;);
+
+<span class="fc" id="L98">      prep.setDouble(1, lat[0]);</span>
+<span class="fc" id="L99">      prep.setDouble(2, lat[1]);</span>
+<span class="fc" id="L100">      prep.setDouble(5, lat[0]);</span>
+<span class="fc" id="L101">      prep.setDouble(6, lat[1]);</span>
+<span class="fc" id="L102">      prep.setDouble(3, lon[0]);</span>
+<span class="fc" id="L103">      prep.setDouble(4, lon[1]);</span>
+<span class="fc" id="L104">      prep.setDouble(SECONDLAST, lon[0]);</span>
+<span class="fc" id="L105">      prep.setDouble(LAST, lon[1]);</span>
+
+<span class="fc" id="L107">      ResultSet rs = prep.executeQuery();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">      if (!rs.isClosed()) {</span>
+<span class="fc" id="L109">        int counter = 0;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L111">          counter++;</span>
+<span class="fc" id="L112">          List&lt;String&gt; twoNode = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L113">          String id = rs.getString(1);</span>
+<span class="fc" id="L114">          String type = rs.getString(6);</span>
+<span class="pc bpc" id="L115" title="3 of 6 branches missed.">          if(!tempHash.containsKey(id) &amp;&amp; !(type.equals(&quot;&quot;) || type.equals(&quot;unclassified&quot;))) {</span>
+<span class="fc" id="L116">            NearestCmd nearestCmd = new NearestCmd(mapCmd);</span>
+
+<span class="fc" id="L118">            String startLat = rs.getString(2);</span>
+<span class="fc" id="L119">            String startLong = rs.getString(3);</span>
+<span class="fc" id="L120">            List&lt;String&gt; startNear = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L121">            startNear.add(startLat); startNear.add(startLong);</span>
+<span class="fc" id="L122">            nearestCmd.run(startNear);</span>
+<span class="fc" id="L123">            MapNode startNode = nearestCmd.getNearNode();</span>
+
+<span class="fc" id="L125">            String endLat = rs.getString(4);</span>
+<span class="fc" id="L126">            String endLong = rs.getString(5);</span>
+<span class="fc" id="L127">            List&lt;String&gt; endNear = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L128">            endNear.add(endLat); startNear.add(endLong);</span>
+<span class="fc" id="L129">            nearestCmd.run(endNear);</span>
+<span class="fc" id="L130">            MapNode endNode = nearestCmd.getNearNode();</span>
+
+<span class="fc" id="L132">            double traversable = 0;</span>
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            if (type.equals(&quot;track&quot;)) {</span>
+<span class="nc" id="L135">              traversable = 10;</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            } else if (type.equals(&quot;service&quot;)) {</span>
+<span class="nc" id="L137">              traversable = serviceSpeed;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            } else if (type.equals(&quot;secondary&quot;)) {</span>
+<span class="nc" id="L139">              traversable = secondarySpeed;</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            } else if (type.equals (&quot;residential&quot;)) {</span>
+<span class="fc" id="L141">              traversable = residentialSpeed;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            } else if (type.equals (&quot;primary&quot;)) {</span>
+<span class="nc" id="L143">              traversable = primarySpeed;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            } else if (type.equals(&quot;path&quot;)) {</span>
+<span class="nc" id="L145">              traversable = 5;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            } else if (type.equals(&quot;motorway_link&quot;)) {</span>
+<span class="nc" id="L147">              traversable = motorway_linkSpeed;</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            } else if (type.equals(&quot;motorway&quot;)) {</span>
+<span class="nc" id="L149">              traversable = motorwaySpeed;</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">            } else if (type.equals(&quot;footway&quot;)) {</span>
+<span class="nc" id="L151">              traversable = 5;</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            } else if (type.equals(&quot;cycleway&quot;)) {</span>
+<span class="nc" id="L153">              traversable = 5;</span>
+            } else {
+<span class="nc" id="L155">              traversable = 0;</span>
+            }
+
+<span class="fc" id="L158">            Way newWay = new Way(startNode, endNode, id, traversable);</span>
+<span class="fc" id="L159">            updatedList.add(newWay);</span>
+
+          }
+<span class="fc" id="L162">          ways.add(id);</span>
+
+<span class="fc" id="L164">          twoNode.add(rs.getString(6));</span>
+<span class="fc" id="L165">          twoNode.add(rs.getString(2));</span>
+<span class="fc" id="L166">          twoNode.add(rs.getString(3));</span>
+<span class="fc" id="L167">          twoNode.add(rs.getString(4));</span>
+<span class="fc" id="L168">          twoNode.add(rs.getString(5));</span>
+
+          // this if for our front end when we return a list of coordinates
+<span class="fc" id="L171">          this.returnList.add(rs.getString(6));</span>
+<span class="fc" id="L172">          this.returnList.add(rs.getString(2));</span>
+<span class="fc" id="L173">          this.returnList.add(rs.getString(3));</span>
+<span class="fc" id="L174">          this.returnList.add(rs.getString(4));</span>
+<span class="fc" id="L175">          this.returnList.add(rs.getString(5));</span>
+
+<span class="fc" id="L177">          wayToNode.put(rs.getString(1), twoNode);</span>
+
+<span class="fc" id="L179">        }</span>
+      }
+<span class="fc" id="L181">      prep.close();</span>
+<span class="fc" id="L182">      rs.close();</span>
+
+<span class="nc" id="L184">    } catch (SQLException e) {</span>
+<span class="nc" id="L185">      return &quot;ERROR: could not query the database&quot;;</span>
+<span class="fc" id="L186">    }</span>
+<span class="fc" id="L187">    StringBuilder out = new StringBuilder();</span>
+    //adds all the way ids to the output string
+<span class="fc bfc" id="L189" title="All 2 branches covered.">    for (String way : ways) {</span>
+<span class="fc" id="L190">      out.append(way);</span>
+<span class="fc" id="L191">      out.append('\n');</span>
+<span class="fc" id="L192">    }</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    if (out.length() == 0) { // when no ways are in the box</span>
+<span class="fc" id="L194">      return &quot;ERROR: No ways in box&quot;;</span>
+    }
+<span class="fc" id="L196">    String output = out.substring(0, out.length() - 1);</span>
+<span class="fc" id="L197">    int size = 4 * 2 * (int) ((((output.length()) * 2)</span>
+      + 5 * 5 + 4 * 5) / (4 * 2)); // rough size of string
+<span class="fc" id="L199">    cacheMap.setSizeOfVal(size);</span>
+<span class="fc" id="L200">    cacheMap.add(key, output); // add k,v pair to cacheMap</span>
+<span class="fc" id="L201">    return output;</span>
+  }
+
+  /**
+   * Returns a hashmap of ways mapping to nodes used for the gui in the frontend.
+   * @return - a hashmap.
+   */
+  public HashMap&lt;String, List&lt;String&gt;&gt; returnNodes() {
+<span class="nc" id="L209">    return this.wayToNode;</span>
+  }
+
+  /**
+   * Returns the nodes of the ways as a string.
+   * @return - a string.
+   */
+  public String returnNodesString() {
+<span class="nc" id="L217">    String s = &quot;&quot;;</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">    for (String coord: this.returnList) {</span>
+<span class="nc" id="L219">      s += coord + &quot; &quot;;</span>
+<span class="nc" id="L220">    }</span>
+<span class="nc" id="L221">    return s.substring(0, s.length() - 1);</span>
+  }
+
+  public List&lt;Way&gt; updatedWays(Double lat1, Double long1, Double lat2, Double long2, List&lt;Way&gt; oldList){
+<span class="nc" id="L225">    String one = &quot;&quot; + lat1;</span>
+<span class="nc" id="L226">    String two = &quot;&quot; + long1;</span>
+<span class="nc" id="L227">    String three = &quot;&quot; + lat2;</span>
+<span class="nc" id="L228">    String four = &quot;&quot; + long2;</span>
+<span class="nc" id="L229">    List&lt;String&gt; tokens = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L230">    tokens.add(one); tokens.add(two); tokens.add(three); tokens.add(four);</span>
+<span class="nc" id="L231">    tempHash = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">    for(int i = 0; i &lt; oldList.size(); i++) {</span>
+<span class="nc" id="L233">      tempHash.put(oldList.get(i).toString(), true);</span>
+    }
+<span class="nc" id="L235">    updatedList = oldList;</span>
+<span class="nc" id="L236">    this.run(tokens);</span>
+<span class="nc" id="L237">    return updatedList;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

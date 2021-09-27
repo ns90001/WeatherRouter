@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPerson.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.modelling</a> &gt; <span class="el_source">MockPerson.java</span></div><h1>MockPerson.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.modelling;
+
+import java.util.regex.Pattern;
+
+/**
+ * MockPerson class which stores information about a mock person.
+ */
+public class MockPerson {
+  private String firstName;
+  private String lastName;
+  private String datetime;
+  private String email;
+  private String gender;
+  private String address;
+
+  /**
+   * Constructor for MockPerson which instantiates local variables by calling mutator methods.
+   *
+   * @param mockFirstName first name of person
+   * @param mockLastName last name of person
+   * @param mockDate date
+   * @param mockEmail email of person
+   * @param mockGender gender of person
+   * @param mockAddress street address of person
+   */
+  public MockPerson(String mockFirstName, String mockLastName, String mockDate, String mockEmail,
+<span class="nc" id="L27">                    String mockGender, String mockAddress) {</span>
+    //calling mutator methods allow fields to be checked for validity
+<span class="nc" id="L29">    setFirstName(mockFirstName);</span>
+<span class="nc" id="L30">    setLastName(mockLastName);</span>
+<span class="nc" id="L31">    setDatetime(mockDate);</span>
+<span class="nc" id="L32">    setEmail(mockEmail);</span>
+<span class="nc" id="L33">    setGender(mockGender);</span>
+<span class="nc" id="L34">    setAddress(mockAddress);</span>
+<span class="nc" id="L35">  }</span>
+
+  /**
+   * Mutator method for the first name of the mock person.
+   *
+   * @param mockFirstName first name of mock person
+   */
+  public void setFirstName(String mockFirstName) {
+<span class="nc" id="L43">    this.firstName = mockFirstName;</span>
+<span class="nc" id="L44">  }</span>
+
+  /**
+   * Mutator method for the last name of the mock person.
+   *
+   * @param mockLastName last name of mock person
+   */
+  public void setLastName(String mockLastName) {
+<span class="nc" id="L52">    this.lastName = mockLastName;</span>
+<span class="nc" id="L53">  }</span>
+
+  /**
+   * Mutator method for the date.
+   *
+   * @param mockDate date in the form MM/DD/YYYY
+   */
+  public void setDatetime(String mockDate) {
+    //checks that the date is in the form MM/DD/YYYY
+<span class="nc" id="L62">    String regex = &quot;^([1-9]|1[0-2])(/)([1-9]|1[0-9]|2[0-9]|3[0-1])(/)\\d{4}$&quot;;</span>
+<span class="nc" id="L63">    Pattern datePattern = Pattern.compile(regex);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">    if (datePattern.matcher(mockDate).matches()) {</span>
+<span class="nc" id="L65">      this.datetime = mockDate;</span>
+    } else {
+<span class="nc" id="L67">      this.datetime = &quot;&quot;;</span>
+    }
+<span class="nc" id="L69">  }</span>
+
+  /**
+   * Mutator method for the email of the mock person.
+   *
+   * @param mockEmail email of mock person
+   */
+  public void setEmail(String mockEmail) {
+    //checks that the email contains text, followed by an @, followed by more text
+<span class="nc" id="L78">    Pattern emailPattern = Pattern.compile(&quot;^(.+)@(.+)$&quot;);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    if (emailPattern.matcher(mockEmail).matches()) {</span>
+<span class="nc" id="L80">      this.email = mockEmail;</span>
+    } else {
+<span class="nc" id="L82">      this.email = &quot;&quot;;</span>
+    }
+<span class="nc" id="L84">  }</span>
+
+  /**
+   * Mutator method for the gender of the mock person.
+   *
+   * @param mockGender gender of the mock person
+   */
+  public void setGender(String mockGender) {
+<span class="nc" id="L92">    this.gender = mockGender;</span>
+<span class="nc" id="L93">  }</span>
+
+  /**
+   * Mutator method for the street address of the mock person.
+   *
+   * @param mockAddress street address where mock person lives
+   */
+  public void setAddress(String mockAddress) {
+<span class="nc" id="L101">    this.address = mockAddress;</span>
+<span class="nc" id="L102">  }</span>
+
+  /**
+   * Gives the String representation of the mock person.
+   *
+   * @return information about the mock person in the form &quot;Name: a,Date: b,
+   * Email: c,Gender: d,Address e&quot;.
+   * All empty fields will be omitted.
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L113">    String out = &quot;&quot;;</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    if (firstName.length() != 1) {</span>
+<span class="nc" id="L115">      out += &quot;Name: &quot; + firstName;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">      if (lastName.length() != 0) {</span>
+<span class="nc" id="L117">        out += &quot; &quot; + lastName;</span>
+      }
+<span class="nc" id="L119">      out += &quot;,&quot;;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    } else if (lastName.length() != 0) {</span>
+<span class="nc" id="L121">      out += &quot;Name: &quot; + lastName + &quot;,&quot;;</span>
+    }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (datetime.length() != 0) {</span>
+<span class="nc" id="L124">      out += &quot;Date: &quot; + datetime + &quot;,&quot;;</span>
+    }
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    if (email.length() != 0) {</span>
+<span class="nc" id="L127">      out += &quot;Email: &quot; + email + &quot;,&quot;;</span>
+    }
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    if (gender.length() != 0) {</span>
+<span class="nc" id="L130">      out += &quot;Gender: &quot; + gender + &quot;,&quot;;</span>
+    }
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (address.length() != 0) {</span>
+<span class="nc" id="L133">      out += &quot;Address: &quot; + address;</span>
+    } else {
+<span class="nc" id="L135">      out = out.substring(0, out.length() - 1);</span>
+    }
+<span class="nc" id="L137">    return out;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

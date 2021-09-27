@@ -1,0 +1,12 @@
+INPUT
+map data/maps/hubs_spokes.sqlite3
+route  0 0 78.465 -0.056
+route "Radish Spirit Blvd" "Chihiro Ave" "Road05" "Road06"
+OUTPUT
+map set to data/maps/hubs_spokes.sqlite3
+/n/0 -> /n/11 : /w/4
+/n/11 -> /n/111 : /w/8
+/n/111 -> /n/112 : /w/9
+/n/0 -> /n/11 : /w/4
+/n/11 -> /n/111 : /w/8
+END

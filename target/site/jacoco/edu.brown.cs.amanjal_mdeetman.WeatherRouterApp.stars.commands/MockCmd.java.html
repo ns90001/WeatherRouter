@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands</a> &gt; <span class="el_source">MockCmd.java</span></div><h1>MockCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.modelling.MockPerson;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.csv.CSVParser;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Class representing the mock command.
+ */
+public class MockCmd implements ICallable {
+
+  /**
+   * Empty constructor for MockCmd.
+   */
+<span class="fc" id="L18">  public MockCmd() { }</span>
+
+  /**
+   * Outputs a list of mock people whose data is present in the provided csv file.
+   *
+   * @param tokens arguments which should just be the name of the csv
+   * @return Either an error message or, if successful, will contain a list of mock people
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">    if (tokens.size() != 1) {</span>
+<span class="nc" id="L29">      return &quot;ERROR: mock command should have 1 argument: &lt;csv&gt;&quot;;</span>
+    }
+<span class="fc" id="L31">    CSVParser csvParser = new CSVParser();</span>
+<span class="fc" id="L32">    String csv = tokens.get(0);</span>
+    try {
+<span class="fc" id="L34">      csvParser.parse(csv, true);</span>
+<span class="nc" id="L35">    } catch (Exception e) {</span>
+<span class="nc" id="L36">      return &quot;&quot;;</span>
+<span class="fc" id="L37">    }</span>
+    /*
+    checks the header from the read file to confirm that the csv file contains mock people
+    in the correct format
+     */
+<span class="fc" id="L42">    String[] header = csvParser.getHeader();</span>
+<span class="fc" id="L43">    String starsHeader = &quot;[first_name, last_name, datetime, email, gender, street_address]&quot;;</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">    if (!Arrays.toString(header).equals(starsHeader)) {</span>
+<span class="fc" id="L45">      return &quot;ERROR: csv should have header \&quot;StarID,ProperName,X,Y,Z\&quot;&quot;;</span>
+    }
+<span class="nc" id="L47">    List&lt;String[]&gt; csvList = csvParser.getList();</span>
+<span class="nc" id="L48">    StringBuilder out = new StringBuilder();</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    for (String[] strings : csvList) {</span>
+<span class="nc" id="L50">      out.append(createMockPerson(strings).toString()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L51">    }</span>
+<span class="nc" id="L52">    return out.substring(0, out.length() - 1);</span>
+  }
+
+  /**
+   * Creates a new instance of MockPerson.
+   *
+   * @param values an array containing the first name, last name, date, email, gender and
+   *               address associated with the mock person
+   * @return the newly created MockPerson object
+   */
+  private MockPerson createMockPerson(String[] values) {
+<span class="nc" id="L63">    return new MockPerson(values[0], values[1], values[2], values[3], values[4], values[5]);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

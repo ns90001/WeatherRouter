@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands</a> &gt; <span class="el_source">MapCmd.java</span></div><h1>MapCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache.Cache;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDTree;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNodeXComparator;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+/**
+ * Class for MapCmd, creates database connection used for other commands.
+ */
+public class MapCmd implements ICallable {
+  private static Connection conn;
+  private KDTree&lt;MapNode&gt; nodeTree;
+  private Map&lt;String, MapNode&gt; nodeMap;
+  private Cache&lt;String, String&gt; cacheMap;
+  /**
+   * Constructor for MapCmd, created cacheMap and new conn.
+   */
+<span class="fc" id="L35">  public MapCmd() {</span>
+<span class="fc" id="L36">    conn = null;</span>
+<span class="fc" id="L37">    cacheMap = new Cache&lt;String, String&gt;();</span>
+<span class="fc" id="L38">    cacheMap.build();</span>
+<span class="fc" id="L39">  }</span>
+  /**
+   * Loads the database and stores the connection.
+   * @param tokens arguments for the command, not including the command name
+   * @return String to be outputted to the repl.
+   */
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    if (tokens.size() != 1) {</span>
+<span class="fc" id="L48">      return &quot;ERROR: map command should have 1 argument: &lt;path/to/database&gt;&quot;;</span>
+    }
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">    if (cacheMap.hasKey(tokens.get(0))) {</span>
+<span class="nc" id="L51">      return cacheMap.returnValue(tokens.get(0));</span>
+    }
+<span class="fc" id="L53">    String dbName = tokens.get(0);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    if (!Files.exists(Path.of(dbName))) {</span>
+<span class="fc" id="L55">      return &quot;ERROR: cannot find a database with path &quot; + dbName;</span>
+    }
+    try {
+<span class="fc" id="L58">      initDatabase(dbName);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">      if (!this.checkTables()) { // make sure correct tables in file return error if not</span>
+<span class="nc" id="L60">        return &quot;ERROR: Wrong Tables in Database&quot;;</span>
+      }
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">      if (!this.checkColumnsNodeTable()) { // make sure Node table has correct columns</span>
+<span class="nc" id="L63">        return &quot;ERROR: Columns of node table are incorrect&quot;;</span>
+      }
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">      if (!this.checkColumnsWayTable()) { // make sure way table has correct columns</span>
+<span class="nc" id="L66">        return &quot;ERROR: Columns of way table are incorrect&quot;;</span>
+      }
+<span class="fc" id="L68">      cacheMap.clean();</span>
+<span class="fc" id="L69">      cacheMap.add(dbName, &quot;Database already loaded in&quot;);</span>
+<span class="nc" id="L70">    } catch (Exception e) {</span>
+<span class="nc" id="L71">      return &quot;ERROR: could not open the database &quot; + dbName;</span>
+<span class="fc" id="L72">    }</span>
+    try {
+<span class="fc" id="L74">      this.kdTreeSetUp();</span>
+<span class="nc" id="L75">    } catch (Exception e) {</span>
+<span class="nc" id="L76">      return &quot;ERROR: could not add nodes to k-d tree&quot;;</span>
+<span class="fc" id="L77">    }</span>
+<span class="fc" id="L78">    return &quot;map set to &quot; + dbName;</span>
+  }
+
+  /**
+   * Initializes the database name.
+   * @param dbName the path of the database
+   * @throws ClassNotFoundException from the Class.forName method
+   * @throws SQLException from the getConnection, createStatement and executeUpdate methods
+   */
+  private void initDatabase(String dbName) throws ClassNotFoundException, SQLException {
+<span class="fc" id="L88">    Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+<span class="fc" id="L89">    String urlToDB = &quot;jdbc:sqlite:&quot; + dbName;</span>
+<span class="fc" id="L90">    conn = DriverManager.getConnection(urlToDB);</span>
+<span class="fc" id="L91">    Statement stat = conn.createStatement();</span>
+<span class="fc" id="L92">    stat.executeUpdate(&quot;PRAGMA foreign_keys=ON;&quot;);</span>
+<span class="fc" id="L93">  }</span>
+
+  /**
+   * Method uses the node table to create MapNodes, with the node name
+   * the latitude and longitude, and then adds these MapNodes to the
+   * nodeList, and also creates a KDTree with the nodeList. Also makes sure
+   * that the node is traversable (is either a start or an end in the ways table).
+   * @throws SQLException from process in method.
+   */
+  private void kdTreeSetUp() throws SQLException {
+<span class="fc" id="L103">    nodeMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L104">    PreparedStatement prep = conn.prepareStatement(&quot;SELECT * FROM node, way &quot;</span>
+        + &quot;WHERE ((node.id  = way.start OR node.id = way.end) AND (way.type != '' AND way.type != 'unclassified'))&quot;);
+<span class="fc" id="L106">    ResultSet rs = prep.executeQuery();</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">    if (!rs.isClosed()) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">      while (rs.next()) { // loop through and get node lat and long</span>
+<span class="fc" id="L109">        MapNode newMapNode = new MapNode(rs.getDouble(2), rs.getDouble(3), rs.getString(1), this);</span>
+<span class="fc" id="L110">        nodeMap.put(newMapNode.toString(), newMapNode);</span>
+<span class="fc" id="L111">      }</span>
+    }
+<span class="fc" id="L113">    prep.close();</span>
+<span class="fc" id="L114">    rs.close();</span>
+    // if more than 0 nodes in database, then add all nodes to kd tree
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">    if (nodeMap.size() &gt; 0) {</span>
+<span class="fc" id="L117">      List&lt;MapNode&gt; nodeListCpy = new ArrayList&lt;&gt;(nodeMap.values());</span>
+<span class="fc" id="L118">      nodeTree = new KDTree&lt;&gt;(2); // lat and long = 2D</span>
+<span class="fc" id="L119">      Comparator&lt;MapNode&gt; mapNodeXComparator = new MapNodeXComparator();</span>
+<span class="fc" id="L120">      nodeListCpy.sort(mapNodeXComparator);</span>
+<span class="fc" id="L121">      int midPoint = (nodeListCpy.size() - 1) / 2;</span>
+<span class="fc" id="L122">      MapNode median = nodeListCpy.get(midPoint);</span>
+<span class="fc" id="L123">      nodeListCpy.remove(midPoint);</span>
+<span class="fc" id="L124">      nodeTree.clear();</span>
+<span class="fc" id="L125">      nodeTree.insert(median);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">      for (MapNode mapNode : nodeListCpy) {</span>
+<span class="fc" id="L127">        nodeTree.insert(mapNode);</span>
+<span class="fc" id="L128">      }</span>
+    }
+<span class="fc" id="L130">  }</span>
+  /**
+   * Returns the database connection.
+   * @return the connection to the database.
+   */
+  public Connection getDatabaseConn() {
+<span class="fc" id="L136">    return conn;</span>
+  }
+
+  /**
+   * Returns k-d tree for nodes.
+   * @return - a k-d tree.
+   */
+  public KDTree&lt;MapNode&gt; getNodeTree() {
+<span class="fc" id="L144">    return nodeTree;</span>
+  }
+
+  /**
+   * Returns a list of the nodes from the database.
+   * @return a list of MapNodes.
+   */
+  public Map&lt;String, MapNode&gt; getNodeMap() {
+<span class="fc" id="L152">    return nodeMap;</span>
+  }
+
+  /**
+   * Method returns a specific node from the nodeMap.
+   * @param id - index of nodeMap
+   * @return - node from nodeMap
+   */
+  public MapNode getNode(String id) {
+<span class="fc" id="L161">    return nodeMap.get(id);</span>
+  }
+
+
+  /**
+   * Method makes sure the tables of the sql file are Node and Way.
+   * @return - boolean true if file is correct, false otherwise
+   * @throws SQLException - exception
+   */
+  private boolean checkTables() throws SQLException {
+<span class="fc" id="L171">    DatabaseMetaData md = conn.getMetaData();</span>
+<span class="fc" id="L172">    ResultSet rs = md.getTables(null, null, &quot;%&quot;, null);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">    while (rs.next()) {</span>
+<span class="pc bpc" id="L174" title="1 of 4 branches missed.">      if (!rs.getString(3).equals(&quot;node&quot;) &amp;&amp; !rs.getString(3).equals(&quot;way&quot;)) {</span>
+<span class="nc" id="L175">        rs.close();</span>
+<span class="nc" id="L176">        return false;</span>
+      }
+    }
+<span class="fc" id="L179">    return true;</span>
+  }
+
+  /**
+   * Method checks to make sure Node Table only has 3 columns.
+   * @return boolean, true if table has 3 columns, false otherwise
+   * @throws SQLException - exception
+   */
+  private boolean checkColumnsNodeTable() throws SQLException {
+<span class="fc" id="L188">    PreparedStatement prep = conn.prepareStatement(&quot;SELECT * FROM node LIMIT 1&quot;);</span>
+<span class="fc" id="L189">    ResultSet rs = prep.executeQuery();</span>
+<span class="fc" id="L190">    ResultSetMetaData md = rs.getMetaData();</span>
+<span class="fc" id="L191">    int col = md.getColumnCount();</span>
+<span class="fc" id="L192">    prep.close();</span>
+<span class="fc" id="L193">    rs.close();</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">    if (col != 3) {</span>
+<span class="nc" id="L195">      return false;</span>
+    }
+<span class="fc" id="L197">    return true;</span>
+  }
+
+  /**
+   * Method checks to make sure Way table has correct number of columns.
+   * @return boolean, true if way has 5 columns, false otherwise
+   * @throws SQLException - exception
+   */
+  private boolean checkColumnsWayTable() throws SQLException {
+<span class="fc" id="L206">    PreparedStatement prep = conn.prepareStatement(&quot;SELECT * FROM way LIMIT 1&quot;);</span>
+<span class="fc" id="L207">    ResultSet rs = prep.executeQuery();</span>
+<span class="fc" id="L208">    ResultSetMetaData md = rs.getMetaData();</span>
+<span class="fc" id="L209">    int col = md.getColumnCount();</span>
+<span class="fc" id="L210">    prep.close();</span>
+<span class="fc" id="L211">    rs.close();</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">    if (col != 5) {</span>
+<span class="nc" id="L213">      return false;</span>
+    }
+<span class="fc" id="L215">    return true;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

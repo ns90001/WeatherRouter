@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NaiveRadiusCmd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands</a> &gt; <span class="el_source">NaiveRadiusCmd.java</span></div><h1>NaiveRadiusCmd.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.commands;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars.Star;
+
+import java.util.List;
+import java.util.TreeMap;
+
+/**
+ * Class representing the naive_radius command.
+ */
+public class NaiveRadiusCmd implements ICallable {
+  private final StarsCmd starsCmd;
+
+  /**
+   * Constructor for NaiveRadiusCmd which initializes instance variables.
+   * @param stars instance of the StarsCmd object which contains the list of stars
+   *                 as well as helper methods
+   */
+<span class="fc" id="L20">  public NaiveRadiusCmd(StarsCmd stars) {</span>
+<span class="fc" id="L21">    starsCmd = stars;</span>
+<span class="fc" id="L22">  }</span>
+
+  @Override
+  public String run(List&lt;String&gt; tokens) {
+<span class="fc bfc" id="L26" title="All 4 branches covered.">    if (tokens.size() != 2 &amp;&amp; tokens.size() != 4) {</span>
+<span class="fc" id="L27">      return &quot;ERROR: naive_radius command should have 2 or 4 arguments&quot;;</span>
+    }
+<span class="fc" id="L29">    double[] location = new double[3];</span>
+    double r;
+    try {
+<span class="fc" id="L32">      r = Double.parseDouble(tokens.get(0));</span>
+<span class="nc" id="L33">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L34">      return &quot;ERROR: first argument should be a number representing the radius&quot;;</span>
+<span class="fc" id="L35">    }</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">    if (tokens.size() == 2) {</span>
+<span class="fc" id="L37">      String starName = starsCmd.parseStarName(tokens.get(1));</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">      if (starName == null) {</span>
+<span class="fc" id="L39">        return &quot;ERROR: &quot;</span>
+          + &quot;second argument should be the star name and should be surrounded in quotation marks&quot;;
+      }
+<span class="fc" id="L42">      Star targetStar = starsCmd.findStar(starName);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">      if (targetStar == null) {</span>
+<span class="fc" id="L44">        return &quot;ERROR: star with name &quot; + starName + &quot; not found&quot;;</span>
+      } else {
+<span class="fc" id="L46">        location = targetStar.getCoords();</span>
+<span class="fc" id="L47">        return search(r, location[0], location[1], location[2], starName);</span>
+      }
+    } else {
+      //coordinates instead of star name given
+<span class="fc bfc" id="L51" title="All 2 branches covered.">      for (int i = 0; i &lt; 3; i++) {</span>
+        try {
+<span class="fc" id="L53">          location[i] = Double.parseDouble(tokens.get(i + 1));</span>
+<span class="nc" id="L54">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L55">          return &quot;ERROR: argument &quot; + i + &quot; should be a number representing a coordinate&quot;;</span>
+<span class="fc" id="L56">        }</span>
+      }
+<span class="fc" id="L58">      return search(r, location[0], location[1], location[2], &quot;&quot;);</span>
+    }
+  }
+
+  /**
+   * Will search all loaded stars and find those which are within a certain distance
+   * from a given starting point.
+   *
+   * @param rad radius around the selected point where stars should be found
+   * @param x x coordinate of the center point
+   * @param y y coordinate of the center point
+   * @param z z coordinate of the center point
+   * @param name proper name of the star if the user used a name instead of coordinates.
+   *             This star will not be included in the output. Empty string should be
+   *             passed in to indicate that the user did not pick a specific star
+   *             as the starting point.
+   * @return either an message or, if successful, will contain a list of star IDs within
+   * the given radius around the center point in order from closest to furthest.
+   */
+  public String search(double rad, double x, double y, double z, String name) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (rad &lt; 0) {</span>
+<span class="fc" id="L79">      return &quot;ERROR: radius must be non-negative&quot;;</span>
+    }
+<span class="fc" id="L81">    TreeMap&lt;Double, List&lt;Integer&gt;&gt; distances = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L82">    List&lt;Star&gt; stars = starsCmd.getStars();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    for (Star star : stars) {</span>
+<span class="fc bfc" id="L84" title="All 4 branches covered.">      if (!(name.length() != 0 &amp;&amp; name.equals(star.getName()))) {</span>
+<span class="fc" id="L85">        double xDif = Math.abs(x - star.getX());</span>
+<span class="fc" id="L86">        double yDif = Math.abs(y - star.getY());</span>
+<span class="fc" id="L87">        double zDif = Math.abs(z - star.getZ());</span>
+        //determines distance from center point
+<span class="fc" id="L89">        double dist = Math.sqrt(xDif * xDif + yDif * yDif + zDif * zDif);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (dist &lt;= rad) {</span>
+<span class="fc" id="L91">          starsCmd.addDistance(distances, star.getId(), dist);</span>
+        }
+      }
+<span class="fc" id="L94">    }</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (distances.size() &gt; 0) {</span>
+      //creates a string containing all the star IDs within the radius, separated by lines
+<span class="fc" id="L97">      int distSize = distances.size();</span>
+<span class="fc" id="L98">      StringBuilder out = new StringBuilder();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">      for (int i = 0; i &lt; distSize; i++) {</span>
+<span class="fc" id="L100">        List&lt;Integer&gt; starIDs = distances.pollFirstEntry().getValue();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (Integer starID : starIDs) {</span>
+<span class="fc" id="L102">          out.append(starID).append(&quot;\n&quot;);</span>
+<span class="fc" id="L103">        }</span>
+      }
+      //removes final newline character and returns
+<span class="fc" id="L106">      return out.substring(0, out.length() - 1);</span>
+    } else {
+<span class="fc" id="L108">      return &quot;&quot;;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

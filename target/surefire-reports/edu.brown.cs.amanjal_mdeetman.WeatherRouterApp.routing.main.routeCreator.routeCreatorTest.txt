@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.routeCreator.routeCreatorTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.086 s - in edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.main.routeCreator.routeCreatorTest

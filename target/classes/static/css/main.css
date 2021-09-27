@@ -1,0 +1,90 @@
+input[type="number"] {
+  width: 3em;
+}
+
+body {
+  padding-left: 40px;
+  padding-right: 40px
+}
+
+h1 {
+  margin-bottom: 0px;
+}
+
+form {
+  position: relative;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.query-box {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  background-color: bisque;
+  height: 210px;
+  padding: 20px;
+}
+
+.query-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.input-line {
+  display: flex;
+  justify-content: center;
+}
+
+.target-type {
+  float: left;
+  text-align: left;
+  position: absolute;
+}
+
+.search-type {
+  float: left;
+  text-align: left;
+  position: absolute;
+  top: 100px;
+}
+
+.sm-text {
+  width: 45px;
+  margin-left: 8px;
+  margin-right: 3px;
+}
+
+#name-neighbors {
+  width: 80px;
+}
+
+#name-radius {
+  width: 80px;
+}
+
+#n-target-coords {
+  display: none;
+}
+
+#r-target-coords {
+  display: none;
+}
+
+.coords {
+  display: flex;
+  justify-content: center;
+}
+
+.submit {
+  background-color: #3860b0;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 100px;
+  border: none;
+  margin-top: 20px;
+}

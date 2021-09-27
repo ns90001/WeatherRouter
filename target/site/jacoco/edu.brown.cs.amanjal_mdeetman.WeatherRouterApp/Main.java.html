@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.Way;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.MapCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.NearestCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.RouteCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands.WaysCmd;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.ICallable;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input.REPL;
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather.WeatherObject;
+import freemarker.template.Configuration;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import spark.ExceptionHandler;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+import spark.template.freemarker.FreeMarkerEngine;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * The Main class of our project. This is where execution begins.
+ *
+ */
+public final class Main {
+  private static final int DEFAULT_PORT = 4567;
+<span class="nc" id="L42">  private static final Gson GSON = new Gson();</span>
+  private static final int TRAFFIC_INTERVAL = 1000;
+
+  /**
+   * The initial method called when execution begins.
+   *
+   * @param args
+   *          An array of command line arguments
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L52">    new Main(args).run();</span>
+<span class="nc" id="L53">  }</span>
+
+  private String[] args;
+  private static REPL repl;
+  private static MapCmd mapCmd;
+
+
+<span class="nc" id="L60">  private Main(String[] args) {</span>
+<span class="nc" id="L61">    this.args = args;</span>
+<span class="nc" id="L62">  }</span>
+
+  private void run() {
+    // Parse command line arguments
+<span class="nc" id="L66">    OptionParser parser = new OptionParser();</span>
+<span class="nc" id="L67">    parser.accepts(&quot;gui&quot;);</span>
+<span class="nc" id="L68">    parser.accepts(&quot;port&quot;).withRequiredArg().ofType(Integer.class)</span>
+<span class="nc" id="L69">    .defaultsTo(DEFAULT_PORT);</span>
+<span class="nc" id="L70">    OptionSet options = parser.parse(args);</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    if (options.has(&quot;gui&quot;)) {</span>
+<span class="nc" id="L73">      runSparkServer((int) options.valueOf(&quot;port&quot;));</span>
+    }
+
+<span class="nc" id="L76">    HashMap&lt;String, ICallable&gt; commands = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L78">    mapCmd = new MapCmd();</span>
+<span class="nc" id="L79">    commands.put(&quot;map&quot;, mapCmd);</span>
+<span class="nc" id="L80">    commands.put(&quot;ways&quot;, new WaysCmd(mapCmd));</span>
+<span class="nc" id="L81">    commands.put(&quot;nearest&quot;, new NearestCmd(mapCmd));</span>
+<span class="nc" id="L82">    commands.put(&quot;route&quot;, new RouteCmd(mapCmd));</span>
+
+    // Create RouteCreator
+<span class="nc" id="L85">    RouteCreator routing = new RouteCreator(mapCmd);</span>
+
+<span class="nc" id="L87">    repl = new REPL(commands);</span>
+<span class="nc" id="L88">    repl.run();</span>
+<span class="nc" id="L89">  }</span>
+
+  private static FreeMarkerEngine createEngine() {
+<span class="nc" id="L92">    Configuration config = new Configuration();</span>
+<span class="nc" id="L93">    File templates = new File(&quot;src/main/resources/spark/template/freemarker&quot;);</span>
+    try {
+<span class="nc" id="L95">      config.setDirectoryForTemplateLoading(templates);</span>
+<span class="nc" id="L96">    } catch (IOException ioe) {</span>
+<span class="nc" id="L97">      System.out.printf(&quot;ERROR: Unable use %s for template loading.%n&quot;,</span>
+          templates);
+<span class="nc" id="L99">      System.exit(1);</span>
+<span class="nc" id="L100">    }</span>
+<span class="nc" id="L101">    return new FreeMarkerEngine(config);</span>
+  }
+
+  private void runSparkServer(int port) {
+<span class="nc" id="L105">    Spark.port(port);</span>
+<span class="nc" id="L106">    Spark.externalStaticFileLocation(&quot;frontend/&quot;);</span>
+
+<span class="nc" id="L108">    Spark.options(&quot;/*&quot;, (request, response) -&gt; {</span>
+<span class="nc" id="L109">      String accessControlRequestHeaders = request.headers(&quot;Access-Control-Request-Headers&quot;);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (accessControlRequestHeaders != null) {</span>
+<span class="nc" id="L111">        response.header(&quot;Access-Control-Allow-Headers&quot;, accessControlRequestHeaders);</span>
+      }
+
+<span class="nc" id="L114">      String accessControlRequestMethod = request.headers(&quot;Access-Control-Request-Method&quot;);</span>
+
+<span class="nc bnc" id="L116" title="All 2 branches missed.">      if (accessControlRequestMethod != null) {</span>
+<span class="nc" id="L117">        response.header(&quot;Access-Control-Allow-Methods&quot;, accessControlRequestMethod);</span>
+      }
+
+<span class="nc" id="L120">      return &quot;OK&quot;;</span>
+    });
+
+<span class="nc" id="L123">    Spark.before((request, response) -&gt; response.header(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;));</span>
+<span class="nc" id="L124">    Spark.exception(Exception.class, new ExceptionPrinter());</span>
+<span class="nc" id="L125">    Spark.post(&quot;/run&quot;, new AlgorithmHandler());</span>
+
+<span class="nc" id="L127">  }</span>
+  private static class AlgorithmHandler implements Route {
+
+    public List&lt;JSONObject&gt; formatOutput(List&lt;Way&gt; wayList) throws JSONException {
+<span class="nc" id="L131">      List&lt;JSONObject&gt; route = new ArrayList&lt;&gt;();</span>
+//      if (addToStart) {
+//        route.add(start);
+//      }
+<span class="nc" id="L135">      double wayEndLat1 = wayList.get(0).getStart().getLatitude();</span>
+<span class="nc" id="L136">      double wayEndLon1 = wayList.get(0).getStart().getLongitude();</span>
+<span class="nc" id="L137">      JSONObject wayJson1 = new JSONObject();</span>
+<span class="nc" id="L138">      JSONObject weatherJson1 = new JSONObject();</span>
+<span class="nc" id="L139">      wayJson1.put(&quot;weather&quot;, weatherJson1);</span>
+<span class="nc" id="L140">      wayJson1.put(&quot;coords&quot;, new double[] {wayEndLat1, wayEndLon1});</span>
+<span class="nc" id="L141">      route.add(wayJson1);</span>
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">      for (Way way : wayList) {</span>
+        //System.out.println(way.getStart().getNodeId() +  &quot; &quot; + way.getEnd().getNodeId());
+        //System.out.println(way.getId() + &quot; &quot; + way.getWeight());
+<span class="nc" id="L146">        double wayEndLat = way.getEnd().getLatitude();</span>
+<span class="nc" id="L147">        double wayEndLon = way.getEnd().getLongitude();</span>
+
+<span class="nc" id="L149">        JSONObject wayJson = new JSONObject();</span>
+
+<span class="nc" id="L151">        JSONObject weatherJson = new JSONObject();</span>
+
+<span class="nc" id="L153">        WeatherObject weatherObj = way.getWeatherObj();</span>
+<span class="nc" id="L154">        weatherJson.put(&quot;temp&quot;, weatherObj.getTemp());</span>
+<span class="nc" id="L155">        weatherJson.put(&quot;forecast&quot;, weatherObj.getForecast());</span>
+<span class="nc" id="L156">        weatherJson.put(&quot;wind&quot;, weatherObj.getWindSpeed());</span>
+
+<span class="nc" id="L158">        wayJson.put(&quot;weather&quot;, weatherJson);</span>
+<span class="nc" id="L159">        wayJson.put(&quot;coords&quot;, new double[] {wayEndLat, wayEndLon});</span>
+
+<span class="nc" id="L161">        route.add(wayJson);</span>
+<span class="nc" id="L162">      }</span>
+
+<span class="nc" id="L164">      System.out.println(&quot;breal&quot;);</span>
+<span class="nc" id="L165">      return route;</span>
+    }
+
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+
+<span class="nc" id="L171">      JSONObject data = new JSONObject(request.body());</span>
+
+<span class="nc" id="L173">      System.out.println(&quot;1&quot;);</span>
+
+<span class="nc" id="L175">      double sLat = data.getDouble(&quot;startLat&quot;);</span>
+<span class="nc" id="L176">      double sLon = data.getDouble(&quot;startLon&quot;);</span>
+<span class="nc" id="L177">      double dLat = data.getDouble(&quot;destLat&quot;);</span>
+<span class="nc" id="L178">      double dLon = data.getDouble(&quot;destLon&quot;);</span>
+
+      // time should be formatted in ISO-8601 format
+
+      //String time = &quot;2021-04-19T06:00:00-04:00&quot;;
+<span class="nc" id="L183">      ZonedDateTime time = ZonedDateTime.parse(data.getString(&quot;time&quot;), DateTimeFormatter.ISO_OFFSET_DATE_TIME);</span>
+
+
+<span class="nc" id="L186">      JSONArray stops = data.getJSONArray(&quot;stops&quot;);</span>
+<span class="nc" id="L187">      int reRoutes = data.getInt(&quot;reRoutes&quot;)-1;</span>
+
+<span class="nc" id="L189">      ArrayList&lt;JSONObject&gt; stopsList = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L191">      System.out.println(stops);</span>
+
+<span class="nc bnc" id="L193" title="All 2 branches missed.">      if (stops != null) {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        for (int i=0; i &lt; stops.length(); i++){</span>
+<span class="nc" id="L195">          System.out.println(stops.getJSONObject(i));</span>
+<span class="nc" id="L196">          stopsList.add(stops.getJSONObject(i));</span>
+        }
+      }
+
+<span class="nc" id="L200">      RouteCreator routeCreator = new RouteCreator(mapCmd);</span>
+
+      // find nearest node to start in database
+<span class="nc" id="L203">      NearestCmd nearest1 = new NearestCmd(mapCmd);</span>
+<span class="nc" id="L204">      List&lt;String&gt; input1 = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L205">      String startLat = &quot;&quot; + sLat;</span>
+<span class="nc" id="L206">      String startLon = &quot;&quot; + sLon;</span>
+<span class="nc" id="L207">      input1.add(startLat);</span>
+<span class="nc" id="L208">      input1.add(startLon);</span>
+<span class="nc" id="L209">      String outputString = nearest1.run(input1);</span>
+
+      // find nearest node to end in database
+<span class="nc" id="L212">      NearestCmd nearest2 = new NearestCmd(mapCmd);</span>
+<span class="nc" id="L213">      List&lt;String&gt; input2 = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L214">      String destLat = &quot;&quot; + dLat;</span>
+<span class="nc" id="L215">      String destLon = &quot;&quot; + dLon;</span>
+<span class="nc" id="L216">      input2.add(destLat);</span>
+<span class="nc" id="L217">      input2.add(destLon);</span>
+<span class="nc" id="L218">      nearest2.run(input2);</span>
+
+<span class="nc" id="L220">      MapNode startNode = nearest1.getNearNode();</span>
+<span class="nc" id="L221">      MapNode endNode = nearest2.getNearNode();</span>
+
+<span class="nc" id="L223">      System.out.println(&quot;5.1&quot;);</span>
+
+<span class="nc" id="L225">      MapNode previousNode = startNode;</span>
+<span class="nc" id="L226">      ZonedDateTime currentTime = time;</span>
+
+<span class="nc" id="L228">      List&lt;List&lt;JSONObject&gt;&gt; formattedRoute = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L229">      formattedRoute.add(new ArrayList&lt;&gt;());</span>
+
+<span class="nc" id="L231">      System.out.println(&quot;5.2&quot;);</span>
+
+<span class="nc" id="L233">      JSONObject startWay = new JSONObject();</span>
+<span class="nc" id="L234">      startWay.put(&quot;weather&quot;, new JSONObject());</span>
+<span class="nc" id="L235">      System.out.println(startNode);</span>
+<span class="nc" id="L236">      System.out.println(startNode.getLatitude());</span>
+<span class="nc" id="L237">      System.out.println(startNode.getLongitude());</span>
+<span class="nc" id="L238">      System.out.println(endNode.getLatitude());</span>
+<span class="nc" id="L239">      System.out.println(endNode.getLongitude());</span>
+<span class="nc" id="L240">      startWay.put(&quot;coords&quot;, new double[] {</span>
+<span class="nc" id="L241">          startNode.getLatitude(),</span>
+<span class="nc" id="L242">          startNode.getLongitude(),</span>
+      });
+
+<span class="nc" id="L245">      System.out.println(&quot;6&quot;);</span>
+<span class="nc" id="L246">      System.out.println(stopsList.size());</span>
+
+<span class="nc bnc" id="L248" title="All 2 branches missed.">      for (int i = 0; i &lt; stopsList.size(); i++) {</span>
+
+<span class="nc" id="L250">        JSONObject stop = stopsList.get(i);</span>
+
+<span class="nc" id="L252">        System.out.println(&quot;looping&quot;);</span>
+
+<span class="nc" id="L254">        double stopLat = stop.getDouble(&quot;lat&quot;);</span>
+<span class="nc" id="L255">        double stopLon = stop.getDouble(&quot;lng&quot;);</span>
+<span class="nc" id="L256">        double stopDuration = stop.getDouble(&quot;time&quot;);</span>
+
+<span class="nc" id="L258">        System.out.println(&quot;loop1&quot;);</span>
+
+<span class="nc" id="L260">        currentTime = currentTime.plusHours((long) stopDuration);</span>
+
+        //
+
+<span class="nc" id="L264">        NearestCmd nearest3 = new NearestCmd(mapCmd);</span>
+<span class="nc" id="L265">        List&lt;String&gt; input3 = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L266">        String stopLatString = &quot;&quot; + stopLat;</span>
+<span class="nc" id="L267">        String stopLonString = &quot;&quot; + stopLon;</span>
+<span class="nc" id="L268">        input3.add(stopLatString);</span>
+<span class="nc" id="L269">        input3.add(stopLonString);</span>
+<span class="nc" id="L270">        nearest3.run(input3);</span>
+
+<span class="nc" id="L272">        System.out.println(stopLatString);</span>
+<span class="nc" id="L273">        System.out.println(stopLonString);</span>
+<span class="nc" id="L274">        System.out.println(&quot;loop2&quot;);</span>
+
+<span class="nc" id="L276">        MapNode currentNode = nearest3.getNearNode();</span>
+
+<span class="nc" id="L278">        System.out.println(&quot;loop2.5&quot;);</span>
+
+<span class="nc" id="L280">        System.out.println(previousNode.getNodeId());</span>
+<span class="nc" id="L281">        System.out.println(currentNode.getNodeId());</span>
+<span class="nc" id="L282">        System.out.println(currentTime.toString());</span>
+
+
+<span class="nc" id="L285">        List&lt;List&lt;Way&gt;&gt; rawOutput = routeCreator.createRoutes(</span>
+            previousNode,
+            currentNode,
+<span class="nc" id="L288">            currentTime.toString(),</span>
+            reRoutes
+        );
+
+<span class="nc" id="L292">        System.out.println(&quot;loop3&quot;);</span>
+
+<span class="nc bnc" id="L294" title="All 4 branches missed.">        if (rawOutput.size() &gt; 1 &amp;&amp; formattedRoute.size() &lt; 2) {</span>
+<span class="nc" id="L295">          formattedRoute.add(new ArrayList&lt;&gt;());</span>
+        }
+
+//        System.out.println(rawOutput.size());
+//        System.out.println(formattedRoute.size());
+
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        if (i == 0) {</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">          for (int j = 0; j &lt; rawOutput.size(); j++) {</span>
+<span class="nc" id="L303">            System.out.println(formattedRoute.get(j).size());</span>
+<span class="nc" id="L304">            formattedRoute.get(j).addAll(formatOutput(rawOutput.get(j)));</span>
+<span class="nc" id="L305">            System.out.println(formattedRoute.get(j).size());</span>
+          }
+        } else {
+<span class="nc bnc" id="L308" title="All 2 branches missed.">          for (int j = 0; j &lt; rawOutput.size(); j++) {</span>
+<span class="nc" id="L309">            System.out.println(formattedRoute.get(j).size());</span>
+<span class="nc" id="L310">            formattedRoute.get(j).addAll(formatOutput(rawOutput.get(j)));</span>
+<span class="nc" id="L311">            System.out.println(formattedRoute.get(j).size());</span>
+          }
+        }
+
+<span class="nc" id="L315">        System.out.println(&quot;loop4&quot;);</span>
+
+<span class="nc" id="L317">        previousNode = currentNode;</span>
+
+      }
+
+<span class="nc" id="L321">      System.out.println(&quot;7&quot;);</span>
+
+<span class="nc" id="L323">      System.out.println(previousNode.getNodeId());</span>
+<span class="nc" id="L324">      System.out.println(endNode.getNodeId());</span>
+      // adds the route from the last stop to the destination
+<span class="nc" id="L326">      List&lt;List&lt;Way&gt;&gt; rawOutput = routeCreator.createRoutes(</span>
+          previousNode,
+          endNode,
+<span class="nc" id="L329">          currentTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),</span>
+          reRoutes
+      );
+
+<span class="nc" id="L333">      System.out.println(&quot;output size is &quot; + rawOutput.size());</span>
+<span class="nc" id="L334">      System.out.println(formattedRoute.size());</span>
+      //List&lt;Way&gt; wayList = rawOutput.get(rawOutput.size() - 1);
+
+<span class="nc bnc" id="L337" title="All 4 branches missed.">      if (rawOutput.size() &gt; 1 &amp;&amp; formattedRoute.size() &lt; 2) {</span>
+<span class="nc" id="L338">        formattedRoute.add(new ArrayList&lt;&gt;());</span>
+      }
+
+<span class="nc bnc" id="L341" title="All 2 branches missed.">      if (stopsList.size() == 0) {</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        for (int j = 0; j &lt; rawOutput.size(); j++) {</span>
+<span class="nc" id="L343">          formattedRoute.get(j).addAll(formatOutput(rawOutput.get(j)));</span>
+        }
+      } else {
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        for (int j = 0; j &lt; rawOutput.size(); j++) {</span>
+<span class="nc" id="L347">          formattedRoute.get(j).addAll(formatOutput(rawOutput.get(j)));</span>
+
+        }
+      }
+
+<span class="nc" id="L352">      System.out.println(&quot;9&quot;);</span>
+
+<span class="nc" id="L354">      JSONObject output = new JSONObject();</span>
+      //System.out.println(formattedRoute.size());
+<span class="nc bnc" id="L356" title="All 2 branches missed.">      if (formattedRoute.size() == 2) {</span>
+//        System.out.println(formattedRoute.get(0));
+<span class="nc" id="L358">        output.put(&quot;normal_route&quot;, formattedRoute.get(0));</span>
+<span class="nc" id="L359">        output.put(&quot;weather_route&quot;, formattedRoute.get(1));</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">      } else if (formattedRoute.size() == 1) {</span>
+<span class="nc" id="L361">        output.put(&quot;normal_route&quot;, formattedRoute.get(0));</span>
+      }
+
+      //System.out.println(&quot;10&quot;);
+
+      // maybe add this feature later?
+      //output.put(&quot;travelTime&quot;, 0);
+
+<span class="nc" id="L369">      System.out.println(&quot;OUTPUT: &quot; + output);</span>
+
+<span class="nc" id="L371">      Map&lt;String, Object&gt; variables = ImmutableMap.of(&quot;route&quot;, output);</span>
+<span class="nc" id="L372">      return GSON.toJson(variables);</span>
+
+    }
+  }
+  /**
+   * Display an error page when an exception occurs in the server.
+   *
+   */
+  private static class ExceptionPrinter implements ExceptionHandler {
+    @Override
+    public void handle(Exception e, Request req, Response res) {
+<span class="nc" id="L383">      res.status(500);</span>
+<span class="nc" id="L384">      StringWriter stacktrace = new StringWriter();</span>
+<span class="nc" id="L385">      try (PrintWriter pw = new PrintWriter(stacktrace)) {</span>
+<span class="nc" id="L386">        pw.println(&quot;&lt;pre&gt;&quot;);</span>
+<span class="nc" id="L387">        e.printStackTrace(pw);</span>
+<span class="nc" id="L388">        pw.println(&quot;&lt;/pre&gt;&quot;);</span>
+      }
+<span class="nc" id="L390">      res.body(stacktrace.toString());</span>
+<span class="nc" id="L391">    }</span>
+  }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

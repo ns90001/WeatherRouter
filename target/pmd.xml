@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
+    version="6.13.0" timestamp="2021-04-21T08:14:50.496">
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/Main.java">
+<violation beginline="43" endline="43" begincolumn="28" endcolumn="43" rule="UnusedPrivateField" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp" class="Main" variable="TRAFFIC_INTERVAL" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
+Avoid unused private fields such as 'TRAFFIC_INTERVAL'.
+</violation>
+<violation beginline="85" endline="85" begincolumn="18" endcolumn="24" rule="UnusedLocalVariable" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp" class="Main" method="run" variable="routing" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedlocalvariable" priority="3">
+Avoid unused local variables such as 'routing'.
+</violation>
+<violation beginline="91" endline="91" begincolumn="35" endcolumn="48" rule="UnusedPrivateMethod" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp" class="Main" method="createEngine" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatemethod" priority="3">
+Avoid unused private methods such as 'createEngine()'.
+</violation>
+<violation beginline="209" endline="209" begincolumn="14" endcolumn="25" rule="UnusedLocalVariable" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp" class="Main$AlgorithmHandler" method="handle" variable="outputString" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedlocalvariable" priority="3">
+Avoid unused local variables such as 'outputString'.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/RouteCreator.java">
+<violation beginline="49" endline="49" begincolumn="27" endcolumn="74" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp" class="RouteCreator" method="createRoutes" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/Cache/Cache.java">
+<violation beginline="40" endline="44" begincolumn="7" endcolumn="7" rule="CollapsibleIfStatements" ruleset="Design" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.Cache" class="Cache" method="add" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/Dijkstra.java">
+<violation beginline="3" endline="3" begincolumn="1" endcolumn="89" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra" class="Dijkstra" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents.MapNode'
+</violation>
+<violation beginline="7" endline="7" begincolumn="1" endcolumn="25" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra" class="Dijkstra" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'java.util.HashMap'
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/dijkstra/DirectedNode.java">
+<violation beginline="19" endline="19" begincolumn="18" endcolumn="33" rule="UnusedPrivateField" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra" class="DirectedNode" variable="weatherHeuristic" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
+Avoid unused private fields such as 'weatherHeuristic'.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/kdtree/KDTree.java">
+<violation beginline="131" endline="139" begincolumn="7" endcolumn="7" rule="CollapsibleIfStatements" ruleset="Design" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree" class="KDTree" method="neighborsRecurse" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="146" endline="148" begincolumn="7" endcolumn="7" rule="CollapsibleIfStatements" ruleset="Design" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree" class="KDTree" method="neighborsRecurse" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="210" endline="212" begincolumn="7" endcolumn="7" rule="CollapsibleIfStatements" ruleset="Design" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree" class="KDTree" method="radiusRecurse" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="256" endline="256" begincolumn="47" endcolumn="57" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree" class="KDTree" method="buildString" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/MapComponents/MapNode.java">
+<violation beginline="11" endline="11" begincolumn="1" endcolumn="25" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents" class="MapNode" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'java.util.HashMap'
+</violation>
+<violation beginline="33" endline="33" begincolumn="18" endcolumn="33" rule="UnusedPrivateField" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.MapComponents" class="MapNode" variable="weatherHeuristic" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
+Avoid unused private fields such as 'weatherHeuristic'.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/NearestCmd.java">
+<violation beginline="62" endline="62" begincolumn="35" endcolumn="55" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="NearestCmd" method="run" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/RouteCmd.java">
+<violation beginline="4" endline="4" begincolumn="1" endcolumn="84" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="RouteCmd" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge'
+</violation>
+<violation beginline="83" endline="83" begincolumn="37" endcolumn="41" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="RouteCmd" method="run" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="134" endline="134" begincolumn="33" endcolumn="53" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="RouteCmd" method="run" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/maps/commands/WaysCmd.java">
+<violation beginline="4" endline="4" begincolumn="1" endcolumn="84" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="WaysCmd" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.dijkstra.DirectedEdge'
+</violation>
+<violation beginline="109" endline="109" begincolumn="13" endcolumn="19" rule="UnusedLocalVariable" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="WaysCmd" method="run" variable="counter" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedlocalvariable" priority="3">
+Avoid unused local variables such as 'counter'.
+</violation>
+<violation beginline="197" endline="197" begincolumn="33" endcolumn="53" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.maps.commands" class="WaysCmd" method="run" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/routing/parsing/input/REPL.java">
+<violation beginline="116" endline="118" begincolumn="13" endcolumn="13" rule="CollapsibleIfStatements" ruleset="Design" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input" class="REPL" method="run" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="144" endline="144" begincolumn="15" endcolumn="33" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input" class="REPL" method="stringRun" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherData.java">
+<violation beginline="5" endline="5" begincolumn="1" endcolumn="30" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'org.json.JSONException'
+</violation>
+<violation beginline="9" endline="9" begincolumn="1" endcolumn="31" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'java.text.DecimalFormat'
+</violation>
+<violation beginline="11" endline="11" begincolumn="1" endcolumn="28" rule="UnusedImports" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'java.time.ZoneOffset'
+</violation>
+<violation beginline="28" endline="28" begincolumn="19" endcolumn="61" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" method="createData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="29" endline="29" begincolumn="19" endcolumn="63" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" method="createData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="55" endline="55" begincolumn="12" endcolumn="66" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" method="createData" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="61" endline="61" begincolumn="16" endcolumn="19" rule="UnusedLocalVariable" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherData" method="createData" variable="icon" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedlocalvariable" priority="3">
+Avoid unused local variables such as 'icon'.
+</violation>
+</file>
+<file name="/Users/naveen/cs0320/term-project-amanjal-igurland-jpate-nsharm25/src/main/java/edu/brown/cs/amanjal_mdeetman/WeatherRouterApp/weather/WeatherObject.java">
+<violation beginline="8" endline="8" begincolumn="18" endcolumn="21" rule="UnusedPrivateField" ruleset="Best Practices" package="edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.weather" class="WeatherObject" variable="icon" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
+Avoid unused private fields such as 'icon'.
+</violation>
+</file>
+</pmd>

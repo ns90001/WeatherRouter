@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>REPL.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input</a> &gt; <span class="el_source">REPL.java</span></div><h1>REPL.java</h1><pre class="source lang-java linenums">//package edu.brown.cs.mdeetman.parsing.input;
+//
+//import java.io.BufferedReader;
+//import java.io.IOException;
+//import java.io.InputStreamReader;
+//import java.util.ArrayList;
+//import java.util.List;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
+//
+///**
+// * Repl class which is primarily in charge of reading user input, printing, and looping.
+// */
+//public class Repl {
+//
+//  /** Constructor for the repl which stars looping and reading inputs.
+//   *
+//   * @param eval an evaluator objects which will evaluate the parsed user inputs
+//   */
+//  public Repl(Evaluator eval) {
+//    BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+//    String line;
+//    while (true) {
+//      try {
+//        line = readLine(input, eval);
+//        if (line != null) {
+//          if (line.length() &gt; 0) {
+//            System.out.println(line);
+//          }
+//        }
+//      } catch (IOException e) {
+//        System.out.println(&quot;ERROR: could not read user input&quot;);
+//        break;
+//      }
+//    }
+//  }
+//
+//  /**
+//   * Reads and parses a line from the user and then evaluates based on the input.
+//   *
+//   * @param input the BufferedReader which will read user input
+//   * @param eval an evaluator object which will perform the evaluating step of the REPL
+//   * @return the output from the evaluator which will be printed
+//   * @throws IOException exception when a line cannot be read by the BufferedReader
+//   */
+//  private String readLine(BufferedReader input, Evaluator eval) throws IOException {
+//    String line = input.readLine();
+//    if (line == null) {
+//      System.exit(0);
+//    }
+//    List&lt;String&gt; tokens = new ArrayList&lt;&gt;();
+//    /*
+//    regex below found on stack overflow:
+//    https://stackoverflow.com/questions/7804335/
+//    by user: aioobe
+//     */
+//    Matcher m = Pattern.compile(&quot;([^\&quot;]\\S*|\&quot;.+?\&quot;)\\s*&quot;).matcher(line);
+//    while (m.find()) {
+//      tokens.add(m.group(1));
+//    }
+//    return eval.evaluate(tokens);
+//  }
+//}
+
+package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.parsing.input;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Class that supports the user-facing REPL and its usage.
+ */
+public class REPL {
+  private final HashMap&lt;String, ICallable&gt; commandToActions;
+  /**
+   * REPL constructor.
+   *
+   * @param commandToActions the list of usable commands
+   */
+<span class="fc" id="L87">  public REPL(HashMap&lt;String, ICallable&gt; commandToActions) {</span>
+<span class="fc" id="L88">    this.commandToActions = commandToActions;</span>
+<span class="fc" id="L89">  }</span>
+
+  /**
+   * Method to start the loop of the repl and take in input.
+   */
+  public void run() {
+<span class="nc" id="L95">    BufferedReader in = new BufferedReader(new InputStreamReader(System.in,</span>
+        StandardCharsets.UTF_8));
+    while (true) {
+      try {
+<span class="nc" id="L99">        String line = in.readLine();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (line == null) {</span>
+<span class="nc" id="L101">          in.close();</span>
+<span class="nc" id="L102">          System.exit(0);</span>
+        } else {
+<span class="nc" id="L104">          List&lt;String&gt; tokens = new ArrayList&lt;&gt;();</span>
+          /*
+          regex below found on stack overflow:
+          https://stackoverflow.com/questions/7804335/
+          by user: aioobe
+           */
+<span class="nc" id="L110">          Matcher m = Pattern.compile(&quot;([^\&quot;]\\S*|\&quot;.+?\&quot;)\\s*&quot;).matcher(line);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">          while (m.find()) {</span>
+<span class="nc" id="L112">            tokens.add(m.group(1));</span>
+          }
+<span class="nc" id="L114">          String out = stringRun(tokens);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">          if (out != null) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">            if (out.length() &gt; 0) {</span>
+<span class="nc" id="L117">              System.out.println(out);</span>
+            }
+          }
+        }
+<span class="nc" id="L121">      } catch (IOException e) {</span>
+<span class="nc" id="L122">        System.out.println(&quot;ERROR: could not read file&quot;);</span>
+<span class="nc" id="L123">        break;</span>
+<span class="nc" id="L124">      }</span>
+    }
+<span class="nc" id="L126">  }</span>
+
+  /**
+   * Method to evaluate the first token and then call the proper command.
+   * @param tokens - a string list.
+   * @return - string from the executed command.
+   */
+  public String stringRun(List&lt;String&gt; tokens) {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">    if (tokens.size() == 0) { // if statement to return error if user just clicks enter</span>
+<span class="nc" id="L135">      return &quot;ERROR: Invalid Command&quot;;</span>
+    }
+<span class="fc" id="L137">    String cmd = tokens.get(0).toLowerCase();</span>
+<span class="fc" id="L138">    tokens.remove(0);</span>
+<span class="fc" id="L139">    ICallable command = commandToActions.get(cmd);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    if (command == null) {</span>
+<span class="fc" id="L141">      return String.format(&quot;ERROR: %s is not a recognized command&quot;, cmd);</span>
+    } else {
+      //calls execute with the arguments for the command, not the command name itself
+<span class="fc" id="L144">      return (command.run(tokens));</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

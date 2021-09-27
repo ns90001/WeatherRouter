@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree</a> &gt; <span class="el_source">KDTree.java</span></div><h1>KDTree.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ *  KDTree class which implements a k-d tree and includes methods to find
+ *  poins close to each other.
+ * @param &lt;T&gt; the type of KDPoint which will be added to the tree.
+ */
+public class KDTree&lt;T extends KDPoint&gt; {
+
+  private final int dimension;
+  private KDNode&lt;T&gt; root;
+  private int numNodes;
+
+  /**
+   * Constructor for KDTree which initializes instance variables.
+   * @param dim The dimension of the tree
+   */
+<span class="fc" id="L22">  public KDTree(int dim) {</span>
+<span class="fc" id="L23">    dimension = dim;</span>
+<span class="fc" id="L24">    root = null;</span>
+<span class="fc" id="L25">    numNodes = 0;</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * Adds a point to the tree.
+   * @param newPoint the point of type T which should be added.
+   */
+  public void insert(T newPoint) {
+    double[] newCoords;
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (newPoint == null) {</span>
+<span class="nc" id="L35">      throw new IllegalArgumentException(&quot;Error: cannot add null to KD tree&quot;);</span>
+    }
+<span class="fc" id="L37">    newCoords = newPoint.getCoords();</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">    if (newCoords.length != dimension) {</span>
+<span class="nc" id="L39">      throw new IllegalArgumentException(</span>
+        &quot;Error: cannot add point of the wrong dimension to KD tree&quot;);
+    }
+<span class="fc" id="L42">    numNodes++;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (root == null) {</span>
+<span class="fc" id="L44">      root = new KDNode&lt;&gt;(newPoint, 0);</span>
+<span class="fc" id="L45">      return;</span>
+    }
+<span class="fc" id="L47">    int depth = 1;</span>
+<span class="fc" id="L48">    KDNode&lt;T&gt; curr = root;</span>
+    KDNode&lt;T&gt; next;
+    while (true) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">      if (newCoords[curr.getKeyDimension()] &lt; curr.getKeyCoordinate()) {</span>
+<span class="fc" id="L52">        next = curr.getLeft();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (next == null) {</span>
+<span class="fc" id="L54">          curr.setLeft(new KDNode&lt;&gt;(newPoint, depth));</span>
+<span class="fc" id="L55">          return;</span>
+        }
+      } else {
+<span class="fc" id="L58">        next = curr.getRight();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (next == null) {</span>
+<span class="fc" id="L60">          curr.setRight(new KDNode&lt;&gt;(newPoint, depth));</span>
+<span class="fc" id="L61">          return;</span>
+        }
+      }
+<span class="fc" id="L64">      curr = next;</span>
+<span class="fc" id="L65">      depth++;</span>
+    }
+  }
+
+  /**
+   * Finds the k closest values from the target.
+   * @param k radius around the target where we want to find nodes
+   * @param target k-d array containing the coordinates of the target.
+   * @param excludeID the id of the entry which you do not want to be returned
+   * @return Sorted map containing the k closest elements.
+   */
+  public MultiTreeMap&lt;Double, T&gt; kNearestNeighbors(int k, double[] target, int excludeID) {
+<span class="fc" id="L77">    MultiTreeMap&lt;Double, T&gt; neighbors = new MultiTreeMap&lt;&gt;();</span>
+<span class="fc" id="L78">    neighborsRecurse(k, root, target, neighbors, excludeID);</span>
+<span class="fc" id="L79">    return neighbors;</span>
+  }
+
+  /**
+   * Finds the k closest values from the target.
+   * @param k radius around the target where we want to find nodes
+   * @param target k-d array containing the coordinates of the target.
+   * @return Sorted map containing the k closest elements.
+   */
+  public MultiTreeMap&lt;Double, T&gt; kNearestNeighbors(int k, double[] target) {
+<span class="fc" id="L89">    MultiTreeMap&lt;Double, T&gt; neighbors = new MultiTreeMap&lt;&gt;();</span>
+<span class="fc" id="L90">    neighborsRecurse(k, root, target, neighbors, -1);</span>
+<span class="fc" id="L91">    return neighbors;</span>
+  }
+
+  /**
+   * Recursive method to determine the points closest to a target.
+   * @param k number of neighbors which want to be found
+   * @param curr current node which is being examined
+   * @param target target point which will act as the origin
+   * @param neighbors data structures which will contain the k closest neighbors
+   * @param excludeID the id of any value which you don't want to be included map of near points.
+   *                  -1 should be passed in to indicate that no points should be excluded.
+   */
+  private void neighborsRecurse(int k, KDNode&lt;T&gt; curr, double[] target,
+                               MultiTreeMap&lt;Double, T&gt; neighbors, int excludeID) {
+<span class="fc" id="L105">    double dist = curr.getPoint().getDist(target);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">    if (curr.getPoint().getId() != excludeID) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">      if (neighbors.size() &lt; k) {</span>
+<span class="fc" id="L108">        neighbors.add(dist, curr.getPoint());</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">      } else if (neighbors.size() != 0) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (dist &lt; neighbors.lastKey()) {</span>
+<span class="fc" id="L111">          List&lt;T&gt; lastList = neighbors.lastEntry().getValue();</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">          if (lastList.size() == 1) {</span>
+<span class="fc" id="L113">            neighbors.remove(neighbors.lastKey());</span>
+          } else {
+<span class="fc" id="L115">            Collections.shuffle(lastList);</span>
+<span class="fc" id="L116">            lastList.remove(0);</span>
+          }
+<span class="fc" id="L118">          neighbors.add(dist, curr.getPoint());</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        } else if (dist == neighbors.lastKey()) {</span>
+<span class="fc" id="L120">          neighbors.add(dist, curr.getPoint());</span>
+<span class="fc" id="L121">          List&lt;T&gt; pointList = neighbors.lastEntry().getValue();</span>
+<span class="fc" id="L122">          Collections.shuffle(pointList);</span>
+<span class="fc" id="L123">          pointList.remove(0);</span>
+        }
+      }
+    }
+<span class="fc" id="L127">    double currKeyCoordinate = curr.getKeyCoordinate();</span>
+<span class="fc" id="L128">    double targetKeyCoordinate = target[curr.getKeyDimension()];</span>
+<span class="fc" id="L129">    double singleDimDist = Math.abs(currKeyCoordinate - targetKeyCoordinate);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">    if (neighbors.size() != 0) {</span>
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">      if (Math.sqrt(neighbors.lastKey()) &gt; singleDimDist || neighbors.size() &lt; k) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (curr.getRight() != null) {</span>
+<span class="fc" id="L133">          neighborsRecurse(k, curr.getRight(), target, neighbors, excludeID);</span>
+        }
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if (curr.getLeft() != null) {</span>
+<span class="fc" id="L136">          neighborsRecurse(k, curr.getLeft(), target, neighbors, excludeID);</span>
+        }
+<span class="fc" id="L138">        return;</span>
+      }
+    }
+<span class="fc bfc" id="L141" title="All 2 branches covered.">    if (currKeyCoordinate &lt; targetKeyCoordinate) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">      if (curr.getRight() != null) {</span>
+<span class="fc" id="L143">        neighborsRecurse(k, curr.getRight(), target, neighbors, excludeID);</span>
+      }
+<span class="fc bfc" id="L145" title="All 2 branches covered.">    } else if (currKeyCoordinate &gt; targetKeyCoordinate) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">      if (curr.getLeft() != null) {</span>
+<span class="fc" id="L147">        neighborsRecurse(k, curr.getLeft(), target, neighbors, excludeID);</span>
+      }
+    }
+<span class="fc" id="L150">  }</span>
+
+  /**
+   * Finds all the nodes within a certain radius of the target.
+   * @param r radius around the target where we want to find nodes
+   * @param target k-d array containing the coordinates of the target.
+   * @param excludeID the id of the entry which you do not want to be returned
+   * @return Sorted map containing all the elements within the radius.
+   */
+  public MultiTreeMap&lt;Double, KDPoint&gt; radiusSearch(double r, double[] target, int excludeID) {
+<span class="fc" id="L160">    MultiTreeMap&lt;Double, KDPoint&gt; nearPoints = new MultiTreeMap&lt;&gt;();</span>
+<span class="fc" id="L161">    radiusRecurse(r, root, target, nearPoints, excludeID);</span>
+<span class="fc" id="L162">    return nearPoints;</span>
+  }
+
+  /**
+   * Finds all the nodes within a certain radius of the target.
+   * @param r radius around the target where we want to find nodes
+   * @param target k-d array containing the coordinates of the target.
+   * @return Sorted map containing all the elements within the radius.
+   */
+  public MultiTreeMap&lt;Double, KDPoint&gt; radiusSearch(double r, double[] target) {
+<span class="nc" id="L172">    MultiTreeMap&lt;Double, KDPoint&gt; nearPoints = new MultiTreeMap&lt;&gt;();</span>
+<span class="nc" id="L173">    radiusRecurse(r, root, target, nearPoints, -1);</span>
+<span class="nc" id="L174">    return nearPoints;</span>
+  }
+
+  /**
+   * Recursive method to determine the points within a given radius of a target.
+   * @param r radius around the target where nodes must be found
+   * @param curr current node which is being examined
+   * @param target target point which will act as the origin
+   * @param nearPoints data structures which will contain all the values
+   *                   within r radius of the target
+   * @param excludeID the id of any value which you don't want to be included map of near points.
+   *                  -1 should be passed in to indicate that no points should be excluded.
+   */
+  public void radiusRecurse(double r, KDNode&lt;T&gt; curr, double[] target,
+                            MultiTreeMap&lt;Double, KDPoint&gt; nearPoints, int excludeID) {
+<span class="fc" id="L189">    double dist = Math.sqrt(curr.getPoint().getDist(target));</span>
+<span class="pc bpc" id="L190" title="1 of 4 branches missed.">    if (curr.getPoint().getId() != excludeID &amp;&amp; dist &lt;= r) {</span>
+<span class="fc" id="L191">      nearPoints.add(dist, curr.getPoint());</span>
+    }
+<span class="fc" id="L193">    double currKeyCoordinate = curr.getKeyCoordinate();</span>
+<span class="fc" id="L194">    double targetKeyCoordinate = target[curr.getKeyDimension()];</span>
+<span class="fc" id="L195">    double singleDimDist = Math.abs(currKeyCoordinate - targetKeyCoordinate);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">    if (r &gt; singleDimDist) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">      if (curr.getRight() != null) {</span>
+<span class="fc" id="L198">        radiusRecurse(r, curr.getRight(), target, nearPoints, excludeID);</span>
+      }
+<span class="fc bfc" id="L200" title="All 2 branches covered.">      if (curr.getLeft() != null) {</span>
+<span class="fc" id="L201">        radiusRecurse(r, curr.getLeft(), target, nearPoints, excludeID);</span>
+      }
+<span class="fc" id="L203">      return;</span>
+    }
+<span class="fc bfc" id="L205" title="All 2 branches covered.">    if (currKeyCoordinate &lt; targetKeyCoordinate) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">      if (curr.getRight() != null) {</span>
+<span class="fc" id="L207">        radiusRecurse(r, curr.getRight(), target, nearPoints, excludeID);</span>
+      }
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    } else if (currKeyCoordinate &gt; targetKeyCoordinate) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">      if (curr.getLeft() != null) {</span>
+<span class="fc" id="L211">        radiusRecurse(r, curr.getLeft(), target, nearPoints, excludeID);</span>
+      }
+    }
+<span class="fc" id="L214">  }</span>
+
+  /**
+   * Clears the tree.
+   */
+  public void clear() {
+<span class="fc" id="L220">    this.root = null;</span>
+<span class="fc" id="L221">    this.numNodes = 0;</span>
+<span class="fc" id="L222">  }</span>
+
+  /**
+   * Returns the number of nodes in the k-d tree.
+   * @return number of nodes in the tree
+   */
+  public int size() {
+<span class="fc" id="L229">    return this.numNodes;</span>
+  }
+
+  /**
+   * toString method for the k-d tree.
+   * @return returns a string containing all the nodes in the form x : y [coords]
+   * where x is the depth of the node and y is its position along the tree at that depth,
+   * assuming the tree is complete.
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L240">    StringBuilder out = new StringBuilder();</span>
+<span class="nc" id="L241">    buildString(root, 0, 1, out);</span>
+<span class="nc" id="L242">    return out.substring(0, out.length() - 1);</span>
+  }
+
+  /**
+   * Recursive helper method to build the string.
+   * @param curr current node being printed
+   * @param depth depth of the node
+   * @param nodeNum number of the node along the depth assuming tree is complete
+   * @param out StringBuilder where the information about the node is being appended
+   */
+  private void buildString(KDNode&lt;T&gt; curr, int depth, int nodeNum, StringBuilder out) {
+<span class="nc" id="L253">    out.append(depth).append(&quot; : &quot;).append(nodeNum)</span>
+<span class="nc" id="L254">      .append(Arrays.toString(curr.getPoint().getCoords())).append('\n');</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">    if (curr.getLeft() != null) {</span>
+<span class="nc" id="L256">      buildString(curr.getLeft(), depth + 1, (nodeNum * 2) - 1, out);</span>
+    }
+<span class="nc bnc" id="L258" title="All 2 branches missed.">    if (curr.getRight() != null) {</span>
+<span class="nc" id="L259">      buildString(curr.getRight(), depth + 1, nodeNum * 2, out);</span>
+    }
+<span class="nc" id="L261">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Star.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">maps</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars</a> &gt; <span class="el_source">Star.java</span></div><h1>Star.java</h1><pre class="source lang-java linenums">package edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.stars;
+
+import edu.brown.cs.amanjal_mdeetman.WeatherRouterApp.routing.kdtree.KDPoint;
+
+/**
+ * Star class which stores information about a particular star.
+ */
+public class Star implements KDPoint {
+  private final int id;
+  private final String name;
+  private final double x;
+  private final double y;
+  private final double z;
+  private final double[] coords;
+
+  /**
+   * Constructor which instantiates local variables.
+   *
+   * @param id star's ID
+   * @param name star's proper name
+   * @param x star's x coordinate
+   * @param y star's y coordinate
+   * @param z star's z coordinate
+   */
+<span class="fc" id="L25">  public Star(int id, String name, double x, double y, double z) {</span>
+<span class="fc" id="L26">    this.id = id;</span>
+<span class="fc" id="L27">    this.name = name;</span>
+<span class="fc" id="L28">    this.x = x;</span>
+<span class="fc" id="L29">    this.y = y;</span>
+<span class="fc" id="L30">    this.z = z;</span>
+<span class="fc" id="L31">    this.coords = new double[]{x, y, z};</span>
+<span class="fc" id="L32">  }</span>
+
+  /**
+   * getter method for the star ID.
+   *
+   * @return ID associated with this star
+   */
+  @Override
+  public int getId() {
+<span class="fc" id="L41">    return this.id;</span>
+  }
+
+  /**
+   * getter method for the star's proper name.
+   *
+   * @return name associated with this star
+   */
+  public String getName() {
+<span class="fc" id="L50">    return this.name;</span>
+  }
+
+  /**
+   * getter method for the x coordinate of star.
+   *
+   * @return x coordinate of the star's position
+   */
+  public double getX() {
+<span class="fc" id="L59">    return this.x;</span>
+  }
+
+  /**
+   * getter method for the z coordinate of star.
+   *
+   * @return z coordinate of the star's position
+   */
+  public double getY() {
+<span class="fc" id="L68">    return this.y;</span>
+  }
+
+  /**
+   * getter method for the z coordinate of star.
+   *
+   * @return z coordinate of the star's position
+   */
+  public double getZ() {
+<span class="fc" id="L77">    return this.z;</span>
+  }
+
+  /**
+   * Outputs a description of the star.
+   *
+   * @return the ID and name associate with this star
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L87">    return String.format(&quot;ID: %d,Name: %s&quot;, this.id, this.name);</span>
+  }
+
+  @Override
+  public double[] getCoords() {
+<span class="fc" id="L92">    return coords;</span>
+  }
+
+  /**
+   * Gets the distance between two stars.
+   *
+   * @param point another star with a distance you want to compare
+   * @return distance between the two stars
+   */
+  @Override
+  public double getDist(KDPoint point) {
+<span class="nc" id="L103">    double[] compCoords = point.getCoords();</span>
+<span class="nc" id="L104">    return calcDist(compCoords);</span>
+  }
+
+  @Override
+  public double getDist(double[] compCoords) {
+<span class="fc" id="L109">    return calcDist(compCoords);</span>
+  }
+
+  private double calcDist(double[] compCoords) {
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">    if (compCoords.length != coords.length) {</span>
+<span class="nc" id="L114">      return -1;</span>
+    }
+<span class="fc" id="L116">    double dist = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">    for (int i = 0; i &lt; coords.length; i++) {</span>
+<span class="fc" id="L118">      double diff = coords[i] - compCoords[i];</span>
+<span class="fc" id="L119">      dist += diff * diff;</span>
+    }
+<span class="fc" id="L121">    return dist;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

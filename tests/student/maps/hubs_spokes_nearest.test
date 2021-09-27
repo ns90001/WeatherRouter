@@ -1,0 +1,7 @@
+INPUT
+map data/maps/hubs_spokes.sqlite3
+nearest 45.6 -32.4
+OUTPUT
+map set to data/maps/hubs_spokes.sqlite3
+/n/13
+END
